@@ -22,6 +22,10 @@
   --gap-lg: 28px;
   --pad-x: clamp(20px, 5vw, 56px);
   --pad-y: clamp(48px, 7vw, 88px);
+  /* 頁面上緣與下緣分開：下緣的 88px 是要跟頁尾拉開距離，
+     上緣本來跟著共用同一個值，於是每一頁的內容都從 88px 才開始，
+     筆電上等於先空掉一整個拇指的高度才看到標題。 */
+  --pad-t: clamp(20px, 3vw, 40px);
 
   --fs-h1: clamp(30px, 4.6vw, 50px);
   --fs-h2: clamp(22px, 3vw, 32px);
@@ -275,7 +279,14 @@ button {
 }
 
 .shell.is-collapsed .sidebar-head {
-  justify-content: center;
+  /* 收合後內容框只有 60 − 12×2 = 36px 寬，但這裡面要放標誌（34px）
+     和收合鈕（32px），加上 8px 間距是 74px。
+     橫向排列再置中，瀏覽器會把溢出的 38px 平均分到兩側，
+     左邊那 19px 讓標誌跑到 x = −7，被 .sidebar 的 overflow: hidden 切掉左緣。
+     改成上下堆疊，兩者都落在 36px 以內（實測標誌 x = 13）。 */
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
 }
 
 .shell.is-collapsed .sb-top {
@@ -295,7 +306,7 @@ button {
 /* ---- main + generic section rhythm ---------------------------------- */
 .main {
   min-width: 0;
-  padding: var(--pad-y) var(--pad-x);
+  padding: var(--pad-t) var(--pad-x) var(--pad-y);
   max-width: 1080px;
   width: 100%;
 }
@@ -1008,7 +1019,15 @@ button {
 
 .card-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  /* 原本寫死兩欄。改成跟前三個格線（.cert-list／.skills-grid／.contact-grid）
+     一樣用 auto-fill：.main 寬度上限 1080px、左右內距各 56px，可用寬度上限 968px，
+     但頁面需要直向捲動軸時會再少約 15px，1280px 的筆電上實際只有 953px。
+     門檻取 290px 而不是 300px 就是為了這個：300×3 + 28×2 = 956 > 953，
+     會剛好在最常見的 1280px 上退回兩欄；290×3 + 28×2 = 926 ≤ 953 才進得去。
+     1280 以上是三欄（卡寬 299px），較窄的筆電退兩欄，手機維持一欄。
+     用 auto-fill 而不是 auto-fit，是為了讓分類篩選後只剩一張卡時，
+     卡片仍維持三欄的寬度、不會被拉成一張橫跨整頁的大卡。 */
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
   gap: var(--gap-lg);
 }
 
@@ -1405,12 +1424,29 @@ button {
     display: inline;
   }
 
+  /* 收合是桌面的功能——.sb-toggle 在這個寬度以下已經隱藏（見上），
+     但收合狀態存在 localStorage 裡，會跟著同一個瀏覽器到手機上。
+     少了這一段，手機上就只剩五個沒有文字的圖示，而且沒有按鈕可以把文字還原；
+     上面那條 .nav-item .lbl 權重比 .shell.is-collapsed .nav-item .lbl 低，蓋不過它。
+     （.meta 與 .sidebar-foot 不在還原之列：它們在這個寬度本來就該隱藏。） */
   .shell.is-collapsed .sidebar {
     width: 100%;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .shell.is-collapsed .logo-name,
+  .shell.is-collapsed .nav-item .lbl {
+    display: inline;
+  }
+
+  .shell.is-collapsed .nav-item {
+    justify-content: flex-start;
+    padding: 9px 10px;
   }
 
   .main {
-    padding: 40px var(--pad-x) 72px;
+    padding: 28px var(--pad-x) 72px;
   }
 }
 
