@@ -67,8 +67,8 @@ export default function ProjectDetail() {
       />
 
       <LinkRow
-        idx={project.repo.idx}
-        heading={project.repo.heading}
+        idx={project.repo?.idx}
+        heading={project.repo?.heading}
         link={project.repo}
         anchor="project-repo"
       />

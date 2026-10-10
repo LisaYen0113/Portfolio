@@ -437,9 +437,17 @@ button {
 /* 頁面標題正下方的那一個 .section：它的上面是標題而不是另一個區塊，
    不需要跟「兩個 section 之間」一樣的呼吸空間，否則標題與內文之間會空一大塊。
    （五個分頁都是 .page-head／.hero／.detail-hero 後面緊接著一個 .section，
-     所以用相鄰選擇器就搆得到，不必為此在 JSX 上加 class。） */
+     所以用相鄰選擇器就搆得到，不必為此在 JSX 上加 class。）
+
+   上一版這裡是 clamp(24px, 3vw, 36px)，1280px 時取到上限 36px，還是太大：
+   首頁標籤列下緣 287 → 這個區塊的內容 323 是 36px，接著 .section-head 自己
+   還有 20px 的頂部內距才輪到「精選作品」四個字，眼睛看到的是 57px，
+   而不是量到的 36px。要縮就得縮上面這一段——分隔線下方的 20px 是標題與線的
+   關係，全站一致，動它會連帶影響每一頁的區塊標題。
+   現在 1280px 取 20px，標籤下緣到「精選作品」是 41px（其中 20px 在分隔線之上、
+   20px 在分隔線之下）。 */
 .main > :is(.hero, .page-head, .detail-hero) + .section {
-  padding-top: clamp(24px, 3vw, 36px);
+  padding-top: clamp(16px, 1.6vw, 20px);
 }
 
 .section-head {

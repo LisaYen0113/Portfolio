@@ -61,6 +61,9 @@ export function FlowSection({ block, anchor }) {
 }
 
 export function ShotGrid({ idx, heading, shots, anchor, erd }) {
+  // 沒有截圖就整段不顯示，避免留一整排「圖片待補」
+  if (!shots || shots.length === 0) return null;
+
   return (
     <Reveal className="section" data-od-id={anchor}>
       <SectionHead idx={idx} heading={heading} />
@@ -78,6 +81,9 @@ export function ShotGrid({ idx, heading, shots, anchor, erd }) {
 }
 
 export function LinkRow({ idx, heading, link, anchor }) {
+  // 沒有連結資料就整段不顯示。用「欄位不存在」判斷，不猜測 url 內容，既有頁面不受影響
+  if (!link) return null;
+
   return (
     <Reveal className="section" data-od-id={anchor}>
       <SectionHead idx={idx} heading={heading} />
