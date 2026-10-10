@@ -1373,6 +1373,9 @@ button {
     height: auto;
     flex-direction: row;
     align-items: center;
+    /* 五個中文標籤的內在寬度是 507px，加上頭像與內距共 643px，
+       比手機視窗還寬。允許折行，導覽才不會被推出畫面外（詳見 640px 區塊）。 */
+    flex-wrap: wrap;
     padding: 12px 16px;
     border-right: none;
     border-bottom: 1px solid var(--border);
@@ -1392,6 +1395,8 @@ button {
 
   .sidebar-nav {
     flex-direction: row;
+    /* 一行放不下時自己折成兩行，而不是整條被裁掉 */
+    flex-wrap: wrap;
     margin: 0 0 0 auto;
     gap: 4px;
   }
@@ -1410,6 +1415,30 @@ button {
 }
 
 @media (max-width: 640px) {
+  /* 這個寬度以下，五個中文標籤（507px）加頭像與內距（643px）一定放不進一行，
+     導覽會折成兩行、頁首因此變高。
+     原本沒有這一段，於是靠 .sidebar 的 overflow-x: auto 把放不下的後半段默默裁掉——
+     360px 時只看得到「首頁」「個人介紹」，作品集、技能經歷、聯絡方式全在畫面外，
+     而且整體可以橫向滑動，所以連「頁面沒有橫向捲動」的驗收都量不出來。 */
+  .sidebar {
+    /* 頁首變高，取消黏頂，滑掉之後就不再佔著畫面 */
+    position: static;
+    row-gap: 8px;
+    /* 不再讓容器把溢出內容裁掉；真的還有東西放不下時，
+       寧可變成整頁的橫向捲動大聲壞掉，也不要默默消失 */
+    overflow: visible;
+  }
+
+  /* 折行後導覽自己佔滿一行，置中的推擠就沒有意義了 */
+  .sidebar-nav {
+    margin: 0;
+  }
+
+  /* 頁首不再黏頂，錨點不需要 88px 的閃避距離（見 900px 區塊） */
+  html {
+    scroll-padding-top: 0;
+  }
+
   .card-grid,
   .shot-grid,
   .spec-grid {
