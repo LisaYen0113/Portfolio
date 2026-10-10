@@ -323,7 +323,11 @@ button {
 }
 
 .page-head {
-  margin-bottom: clamp(32px, 5vw, 56px);
+  /* 原本這裡有 clamp(32px, 5vw, 56px) 的底部間距，但緊接著的 .section 自己也有
+     一段頂部內距，兩者相加才是使用者看到的空白：個人介紹／作品集是 56 + 56 = 112px，
+     技能經歷再加上 .section-head 的 20px 與 1px 分隔線是 133px。
+     標題區塊不再自己留底部空間，節奏統一由 .section 決定（見下方相鄰選擇器）。 */
+  margin-bottom: 0;
 }
 
 .eyebrow {
@@ -347,7 +351,9 @@ button {
 
 /* ---- hero (index) --------------------------------------------------- */
 .hero {
-  padding-bottom: clamp(40px, 6vw, 72px);
+  /* 同 .page-head：這 72px 與下一個 .section 的 56px 相加，
+     首頁標題與「精選作品」之間因此空掉 149px。 */
+  padding-bottom: 0;
 }
 
 .hero h1 {
@@ -428,6 +434,14 @@ button {
   padding-top: clamp(34px, 5vw, 56px);
 }
 
+/* 頁面標題正下方的那一個 .section：它的上面是標題而不是另一個區塊，
+   不需要跟「兩個 section 之間」一樣的呼吸空間，否則標題與內文之間會空一大塊。
+   （五個分頁都是 .page-head／.hero／.detail-hero 後面緊接著一個 .section，
+     所以用相鄰選擇器就搆得到，不必為此在 JSX 上加 class。） */
+.main > :is(.hero, .page-head, .detail-hero) + .section {
+  padding-top: clamp(24px, 3vw, 36px);
+}
+
 .section-head {
   display: flex;
   align-items: baseline;
@@ -478,7 +492,9 @@ button {
 
 /* ---- detail hero / spec -------------------------------------------- */
 .detail-hero {
-  padding-top: clamp(40px, 6vw, 72px);
+  /* 原本靠這段 72px 的上內距把內容壓低，但 .main 已經有 --pad-t 在決定頁面上緣，
+     兩者相加讓詳情頁第一段文字落在 113px，比其他頁面的 46px 多出一大截。 */
+  padding-top: 0;
 }
 
 .back-link {
