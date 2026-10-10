@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import useCanvasStage from "./useCanvasStage.js";
+import DemoUnavailable from "./DemoUnavailable.jsx";
 import { HAT_LIMITS, adjust } from "./hatParams.js";
 
 /**
@@ -253,7 +254,7 @@ export default function MexicanHat() {
       <p className="demo-note">
         地球公轉半徑範圍 100–400、地球2 為 150–500，月球半徑隨時間以 sin 振盪。
       </p>
-      {error && <p className="demo-fallback">此展示無法啟動：{error.message}</p>}
+      {error && <DemoUnavailable error={error} />}
     </div>
   );
 }

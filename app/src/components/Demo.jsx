@@ -1,6 +1,7 @@
 import { Component, Suspense, useEffect, useRef, useState } from "react";
 import Reveal from "./Reveal.jsx";
 import SectionHead from "./SectionHead.jsx";
+import DemoUnavailable from "./demos/DemoUnavailable.jsx";
 import registry from "./demos/registry.js";
 
 /** 提前 200px 開始載入，讓使用者捲到時已經就緒 */
@@ -14,13 +15,10 @@ function DemoLoading() {
   );
 }
 
-function DemoFallback({ reason }) {
+function DemoFallback({ reason, error }) {
   return (
     <div className="demo-stage">
-      <p className="demo-fallback">
-        此互動展示無法在此裝置上執行{reason ? `（${reason}）` : ""}。
-        展示內容需要 WebGL 與 JavaScript，請改用支援的瀏覽器，或開啟硬體加速後重新整理。
-      </p>
+      <DemoUnavailable reason={reason} error={error} />
     </div>
   );
 }
@@ -41,7 +39,8 @@ class DemoBoundary extends Component {
   }
 
   render() {
-    if (this.state.error) return <DemoFallback reason={this.state.error.message} />;
+    // 邊界攔到的是元件的原始例外，交給 DemoUnavailable 決定要不要顯示技術細節
+    if (this.state.error) return <DemoFallback error={this.state.error} />;
     return this.props.children;
   }
 }

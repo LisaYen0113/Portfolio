@@ -1,5 +1,6 @@
 import { useCallback, useRef, useState } from "react";
 import useCanvasStage from "./useCanvasStage.js";
+import DemoUnavailable from "./DemoUnavailable.jsx";
 import { EXIT, SIZE, WALL, createMaze, search } from "./mazeSearch.js";
 
 // 配色沿用原始 C++ 檔的 glColor3f 數值
@@ -314,7 +315,7 @@ export default function Maze() {
       <p className="demo-status" aria-live="polite">
         {statusText}
       </p>
-      {error && <p className="demo-fallback">此展示無法啟動：{error.message}</p>}
+      {error && <DemoUnavailable error={error} />}
     </div>
   );
 }

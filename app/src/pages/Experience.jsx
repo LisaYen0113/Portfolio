@@ -4,10 +4,19 @@ import Reveal from "../components/Reveal.jsx";
 
 const EDUCATION = [
   {
-    when: "就讀年份待補",
+    when: "2023 – 2027（預計 2027/6 畢業）",
     h: "輔仁大學 · 資訊管理學系",
-    sub: "主修資訊管理，並修習資訊技術（資工）相關課程。",
+    sub: "主修資訊管理學系，113 學年度起雙主修資訊工程學系。",
   },
+];
+
+const COURSE_HIGHLIGHTS = [
+  "系統分析與設計 100",
+  "資訊系統專題 95 / 97",
+  "空間資訊管理 97",
+  "離散數學 95",
+  "資料結構 92",
+  "資料庫管理 91",
 ];
 
 const CERTS = [
@@ -18,20 +27,24 @@ const CERTS = [
 
 const SKILLS = [
   {
-    h: "需求分析與問題拆解",
-    items: ["使用者訪談", "需求整理", "問題定義", "流程梳理"],
+    h: "後端與 API 設計",
+    items: ["REST API", "API 規格文件", "HTTP 狀態碼", "Bearer Token 驗證"],
   },
   {
-    h: "流程與系統規劃",
-    items: ["流程設計", "系統規劃", "資料建模", "規格撰寫"],
+    h: "AI 應用與檢索",
+    items: ["LangGraph", "RAG", "Embedding", "Prompt 優化"],
   },
   {
-    h: "前端與實作",
-    items: ["React", "HTML / CSS", "JavaScript", "互動設計"],
+    h: "資料與空間資訊",
+    items: ["Python", "SQL", "地理資訊處理", "空間分析"],
   },
   {
-    h: "資料與工具",
-    items: ["Python", "SQL", "資料分析", "Git / GitHub"],
+    h: "程式語言",
+    items: ["Python（主要）", "Java", "C / C++", "JavaScript", "SQL", "PHP", "R"],
+  },
+  {
+    h: "需求分析與協作",
+    items: ["使用者訪談", "問卷驗證", "需求整理", "團隊協作"],
   },
 ];
 
@@ -66,6 +79,19 @@ export default function Experience() {
               </div>
             </div>
           ))}
+          <div className="tl-item">
+            <div className="tl-when">修課表現</div>
+            <div>
+              <div className="tl-h">專業科目</div>
+              <ul className="skill-list">
+                {COURSE_HIGHLIGHTS.map((c) => (
+                  <li className="tag" key={c}>
+                    {c}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
         </div>
       </Reveal>
 

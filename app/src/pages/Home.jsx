@@ -13,13 +13,14 @@ export default function Home() {
         <span className="eyebrow">Portfolio · 2026</span>
         <h1>顏妤帆</h1>
         <p className="lead">
-          資訊管理 × 資訊技術。把需求拆解成可執行的流程與系統，並用清楚的介面把複雜的資訊變得容易理解。
+          資訊管理 × 資訊工程雙主修。從後端與 API 規格到 AI Agent 與空間分析，
+          把需求拆解成可以運作的系統。
         </p>
         <div className="hero-meta">
-          <span className="tag">需求分析</span>
-          <span className="tag">流程規劃</span>
-          <span className="tag">資料應用</span>
-          <span className="tag">前端實作</span>
+          <span className="tag">後端開發</span>
+          <span className="tag">API 設計</span>
+          <span className="tag">AI Agent</span>
+          <span className="tag">空間資訊</span>
         </div>
       </Reveal>
 

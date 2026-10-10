@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import useCanvasStage from "./useCanvasStage.js";
+import DemoUnavailable from "./DemoUnavailable.jsx";
 
 /**
  * 九種動作。標籤沿用原檔按鈕上的文字——
@@ -305,7 +306,7 @@ export default function Robot() {
         目前動作：{ACTIONS.find((a) => a.key === action)?.label}
         {action !== "stand" && "（切換動作前先按「立正」可將關節歸零）"}
       </p>
-      {error && <p className="demo-fallback">此展示無法啟動：{error.message}</p>}
+      {error && <DemoUnavailable error={error} />}
     </div>
   );
 }

@@ -4,6 +4,15 @@ import { useEffect, useRef, useState } from "react";
 const MAX_DPR = 2;
 
 /**
+ * frame 連續拋錯幾次才放棄。
+ *
+ * 一次偶發的拋錯（裝置一瞬間拿不到繪圖資源之類）不該讓展示從此凍結，
+ * 所以先讓下一張自己重試；但連續失敗代表這個展示是真的壞了，
+ * 再繼續以每秒 60 次呼叫也只是洗版，不如停下來顯示訊息。
+ */
+const MAX_FRAME_FAILURES = 3;
+
+/**
  * 管理一個 canvas 的完整生命週期：尺寸、動畫迴圈、資源釋放。
  *
  * 釋放不是最佳化而是必要：換頁時若未釋放 WebGL context，
@@ -56,6 +65,7 @@ export default function useCanvasStage({ init, frame, onResize }) {
 
     let observer = null;
     if (!failed) {
+      let failures = 0;
       const tick = (now) => {
         if (disposed) return;
         // 分頁切換回來時 dt 會非常大，設上限避免動畫一次跳掉
@@ -63,9 +73,14 @@ export default function useCanvasStage({ init, frame, onResize }) {
         last = now;
         try {
           latest.current.frame?.({ dt, elapsed: (now - started) / 1000 });
+          failures = 0; // 這一張畫成功，重新計數
         } catch (e) {
-          setError(e);
-          return;
+          failures += 1;
+          if (import.meta.env.DEV) console.error(`[demo] frame 發生錯誤（連續第 ${failures} 次）:`, e);
+          if (failures >= MAX_FRAME_FAILURES) {
+            setError(e);
+            return;
+          }
         }
         rafId = requestAnimationFrame(tick);
       };

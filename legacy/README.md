@@ -1,6 +1,6 @@
 # 課程作業原始檔
 
-此目錄保存「電腦圖學」（資工輔系）三份作業的原始程式碼，僅作對照與來源說明之用，不參與建置、不進部署產物。
+此目錄保存「電腦圖學」（資工雙主修）三份作業的原始程式碼，僅作對照與來源說明之用，不參與建置、不進部署產物。
 
 ## mexican-hat/index.r83.html
 
@@ -27,3 +27,10 @@
 - 內容：10×10 迷宮、深度優先搜尋（DFS）與回溯、右鍵選單操作介面
 - 改寫為：`app/src/components/demos/Maze.jsx`（演算法核心在 `mazeSearch.js`）
 - 改寫時的重要變更：繪圖由 OpenGL `GL_QUADS` 改為 Canvas 2D `fillRect`；DFS 改寫為 generator 以支援逐步播放
+
+## maze/main.utf8.cpp
+
+- `maze/main.cpp` 的 UTF-8 轉錄版。內容逐字元相同（339 行），僅編碼由 Big5 轉為 UTF-8
+- 存在理由：`main.cpp` 為 Big5 編碼，GitHub 以 UTF-8 解讀會使 27 行中文註解顯示為亂碼，不利線上閱讀
+- 原始檔 `maze/main.cpp` 保留未更動，為真正的原始碼依據；此檔僅為方便閱讀的副本，不參與建置，亦不進部署產物
+- 作品頁的「在 GitHub 檢視」連結指向此檔
