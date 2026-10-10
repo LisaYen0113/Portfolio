@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>墨西哥帽子</title>
+	<style>
+		canvas {
+			width: 100%;
+			height: 90%
+		}
+		button {
+			background-color: #4c75af; 
+			border: none; 
+			color: white; 
+			padding: 15px 20px;
+			text-align: center; 
+			text-decoration: none; 
+			display: inline-block; 
+			font-size: 16px; 
+			margin: 4px 1px; 
+			cursor: pointer; 
+			border-radius: 12px; 
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+			transition: background-color 0.3s, transform 0.3s; 
+		}
+		
+		button:hover {
+			background-color: #4563a0; 
+			transform: scale(1.02); 
+		}
+	
+		button:active {
+			background-color: #4563a0; 
+			transform: scale(1); 
+		}
+		
+	</style>
+</head>
+
+<body>
+	<button id="increasemoonspeed">increase moon speed</button>
+	<button id="decreasemoonspeed">decrease moon speed</button>
+	<button id="increaseearthspeed">increase earth speed</button>
+	<button id="decreaseearthspeed">decrease earth speed</button>
+
+	<button id="increaseDistance">increase earth Distance</button>
+	<button id="decreaseDistance">decrease earth Distance</button>
+	<button id="increaseDistance2">increase earth2 Distance</button>
+	<button id="decreaseDistance2">decrease earth2 Distance</button>
+
+
+	<div id="stats"></div>
+	<script src="three.js-master/build/three.js"></script>
+	<script src="three.js-master/examples/js/controls/TrackballControls.js"></script>
+	<script src="three.js-master/examples/js/myself/button.js"></script>
+
+	<script>
+		var stats = document.getElementById('stats');
+		var camera, scene, renderer, controls;
+		var moonspeed = 0.05, earthspeed = 0.01;
+		var sun, earth, earth2, moon, moon2, sunhat;
+		var angle = 0, angle2 = 0, angle3 = 0, angle4 = 0; // 初始角度設定
+
+		var moonScaleFactor = 1; // 月亮的當前縮放因子
+		var moonScaleSpeed = 0.05; // 月亮縮放變化的速度
+
+		var earthSunDistance = 200;
+		var earth2SunDistance = 250;
+
+		var loadedTexture;
+		/**因應三種型態 需要三種不同疏密的LINE  n = sun e = earth m = moon**/
+		var nRows = 50;
+		var nColumns = 50;
+
+		var eRows = 30;
+		var eColumns = 30;
+
+		var mRows = 10;
+		var mColumns = 10;
+
+		var data = new Array(nRows);
+		var edata = new Array(nRows);
+		var mdata = new Array(nRows);
+
+		for (var i = 0; i < nRows; i++) data[i] = new Array(nColumns);
+
+		for (var i = 0; i < nRows; i++) {
+			var x = Math.PI * (4 * i / nRows - 2.0);
+			for (var j = 0; j < nColumns; j++) {
+				var y = Math.PI * (4 * j / nRows - 2.0);
+				var r = Math.sqrt(x * x + y * y)
+
+				if (r) data[i][j] = Math.sin(r) / r;
+				else data[i][j] = 1;
+			}
+		}
+
+		for (var i = 0; i < eRows; i++) edata[i] = new Array(eColumns);
+
+		for (var i = 0; i < eRows; i++) {
+			var x = Math.PI * (4 * i / eRows - 2.0);
+			for (var j = 0; j < eColumns; j++) {
+				var y = Math.PI * (4 * j / eRows - 2.0);
+				var r = Math.sqrt(x * x + y * y)
+
+				if (r) edata[i][j] = Math.sin(r) / r;
+				else edata[i][j] = 1;
+			}
+		}
+
+		for (var i = 0; i < mRows; i++) mdata[i] = new Array(mColumns);
+
+		for (var i = 0; i < mRows; i++) {
+			var x = Math.PI * (4 * i / mRows - 2.0);
+			for (var j = 0; j < mColumns; j++) {
+				var y = Math.PI * (4 * j / mRows - 2.0);
+				var r = Math.sqrt(x * x + y * y)
+
+				if (r) mdata[i][j] = Math.sin(r) / r;
+				else mdata[i][j] = 1;
+			}
+		}
+
+
+		var pointsArray = [];
+		var colorArray = [];
+		var earth_size = [];
+		var earth_color = [];
+		var moon_size = [];
+		var moon_color = [];
+		init();
+		animate();
+
+		function init() {
+			camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+			camera.position.z = 500;
+			controls = new THREE.TrackballControls(camera);
+			controls.addEventListener('change', render);
+
+			scene = new THREE.Scene();
+
+			// Sun geometry
+			var sungeo = new THREE.BufferGeometry();
+			var line_material = new THREE.LineBasicMaterial({ vertexColors: THREE.VertexColors });
+			var sunpositions = [];
+			var suncolors = [];
+
+			for (var i = 0; i < nRows - 1; i++) {
+				for (var j = 0; j < nColumns - 1; j++) {
+					pointsArray.push((50 * 2 * i / nRows - 1) - 50, 50 * data[i][j], (50 * 2 * j / nColumns - 1) - 50);
+					colorArray.push(1.0, 0.5, 0.0);
+				}
+			}
+			for (var j = 0; j < nColumns - 1; j++) {
+				for (var i = 0; i < nRows - 1; i++) {
+					pointsArray.push((50 * 2 * i / nRows - 1) - 50, 50 * data[i][j], (50 * 2 * j / nColumns - 1) - 50);
+					colorArray.push(1.0, 0.5, 0.0);
+				}
+			}
+
+			sungeo.addAttribute('position', new THREE.Float32BufferAttribute(pointsArray, 3))
+			sungeo.addAttribute('color', new THREE.Float32BufferAttribute(colorArray, 3));
+			sungeo.computeBoundingBox();
+			sunhat = new THREE.Line(sungeo, line_material);
+			sun = sunhat;
+
+			scene.add(sun);
+
+			// Earth geometry
+			var earthgeo = new THREE.BufferGeometry();
+			for (var i = 0; i < eRows - 1; i++) {
+				for (var j = 0; j < eColumns - 1; j++) {
+					earth_size.push((30 * 2 * i / eRows - 1) - 30, 30 * edata[i][j], (30 * 2 * j / eColumns - 1) - 30);
+					earth_color.push(0.0, 0.5, 0.3);
+				}
+			}
+			earthgeo.addAttribute('position', new THREE.Float32BufferAttribute(earth_size, 3));
+			earthgeo.addAttribute('color', new THREE.Float32BufferAttribute(earth_color, 3));
+			earth = new THREE.Line(earthgeo, line_material);
+			scene.add(earth);
+
+			// 第二顆地球
+			var earth2geo = new THREE.BufferGeometry();
+			var earth2_size = [];
+			var earth2_color = [];
+
+			for (var i = 0; i < eRows - 1; i++) {
+				for (var j = 0; j < eColumns - 1; j++) {
+					earth2_size.push((30 * 2 * i / eRows - 1) - 30, 30 * edata[i][j], (30 * 2 * j / eColumns - 1) - 30);
+					earth2_color.push(0.0, 0.3, 0.6);  // 第二顆地球的顏色
+				}
+			}
+
+			earth2geo.addAttribute('position', new THREE.Float32BufferAttribute(earth2_size, 3));
+			earth2geo.addAttribute('color', new THREE.Float32BufferAttribute(earth2_color, 3));
+			earth2 = new THREE.Line(earth2geo, line_material);
+			scene.add(earth2);
+
+			// Moon geometry
+			var moongeo = new THREE.BufferGeometry();
+			for (var i = 0; i < mRows - 1; i++) {
+				for (var j = 0; j < mColumns - 1; j++) {
+					moon_size.push((10 * 2 * i / mRows - 1) - 10, 10 * mdata[i][j], (10 * 2 * j / mColumns - 1) - 10);
+					moon_color.push(0.0, 0.0, 0.3);
+				}
+			}
+			moongeo.addAttribute('position', new THREE.Float32BufferAttribute(moon_size, 3));
+			moongeo.addAttribute('color', new THREE.Float32BufferAttribute(moon_color, 3));
+			moon = new THREE.Line(moongeo, line_material);
+			scene.add(moon);
+
+			// Second moon geometry (moon2)
+			var moongeo2 = new THREE.BufferGeometry();
+			moon_size = []; // Reset the array for second moon
+			moon_color = [];
+			for (var i = 0; i < mRows - 1; i++) {
+				for (var j = 0; j < mColumns - 1; j++) {
+					moon_size.push((10 * 2 * i / mRows - 1) - 10, 10 * mdata[i][j], (10 * 2 * j / mColumns - 1) - 10);
+					moon_color.push(0.0, 0.0, 0.3);
+				}
+			}
+			moongeo2.addAttribute('position', new THREE.Float32BufferAttribute(moon_size, 3));
+			moongeo2.addAttribute('color', new THREE.Float32BufferAttribute(moon_color, 3));
+			moon2 = new THREE.Line(moongeo2, line_material);
+			scene.add(moon2);
+
+			renderer = new THREE.WebGLRenderer();
+			renderer.setSize(window.innerWidth, window.innerHeight);
+			renderer.setClearColor(0xffffff);
+			document.body.appendChild(renderer.domElement);
+		}
+
+		function animate() {
+			stats.innerHTML = "Moon Speed : " + moonspeed + "  Earth Speed : " + earthspeed;
+			requestAnimationFrame(animate);
+			controls.update();
+			render();
+		}
+
+		function render() {
+			angle += earthspeed;
+			angle4 += earthspeed * 1.2; // 第二顆地球的運行速度可以不同
+			angle2 += moonspeed;
+			angle3 += moonspeed * 1.5;
+
+			// 更新月亮大小
+			moonScaleFactor = 1 + 0.5 * Math.sin(angle2); // 縮放範圍：0.5 到 1.5
+			moon.scale.set(moonScaleFactor, moonScaleFactor, moonScaleFactor);
+
+			sun.rotation.y += 0.01;
+
+			earth.rotation.y += 0.01;
+			earth.position.set(earthSunDistance * Math.cos(angle), earthSunDistance * Math.sin(angle), 0);
+
+			// 第二顆地球的運動
+			earth2.rotation.y += 0.01; // 繞自身垂直軸的旋轉
+			earth2.rotation.x += 0.01; // 水平軸（X軸）上的連續旋轉，每幀增加 0.01 弧度
+			earth2.position.set(
+				earth2SunDistance * Math.cos(angle4),
+				earth2SunDistance * Math.sin(angle4),
+				0
+			);
+
+
+			moon.rotation.y += 0.01;
+			moon.position.set(earthSunDistance * Math.cos(angle) + 50 * Math.cos(angle2), earthSunDistance * Math.sin(angle) + 50 * Math.sin(angle2), 0);
+			// 第二顆月亮的位置設定，與第一顆月亮相似，但使用不同的角度和運動速度
+			moon2.rotation.y += 0.01;
+			moon2.position.set(earthSunDistance * Math.cos(angle) + 50 * Math.cos(angle3), earthSunDistance * Math.sin(angle) + 50 * Math.sin(angle3), 0);
+
+			renderer.render(scene, camera);
+		}
+	</script>
+</body>
+
+</html>

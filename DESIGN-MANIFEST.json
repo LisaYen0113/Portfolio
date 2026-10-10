@@ -1,0 +1,341 @@
+{
+  "schema": "open-design.design-manifest.v1",
+  "title": "81b4f262-d1a2-453b-a376-4de45c1f91d1",
+  "entryFile": "app/index.html",
+  "sourceFiles": {
+    "all": [
+      "第七組資料庫管理-產業實習.pdf",
+      "輔大產業實習平台.drawio",
+      "about.html",
+      "app/index.html",
+      "app/package-lock.json",
+      "app/package.json",
+      "app/src/App.jsx",
+      "app/src/components/Detail.jsx",
+      "app/src/components/ErDiagram.jsx",
+      "app/src/components/Footer.jsx",
+      "app/src/components/icons.jsx",
+      "app/src/components/Layout.jsx",
+      "app/src/components/ProjectCard.jsx",
+      "app/src/components/Reveal.jsx",
+      "app/src/components/Sidebar.jsx",
+      "app/src/data/courses.json",
+      "app/src/data/projects.json",
+      "app/src/main.jsx",
+      "app/src/pages/About.jsx",
+      "app/src/pages/Contact.jsx",
+      "app/src/pages/CourseDetail.jsx",
+      "app/src/pages/Experience.jsx",
+      "app/src/pages/Home.jsx",
+      "app/src/pages/NotFound.jsx",
+      "app/src/pages/Portfolio.jsx",
+      "app/src/pages/ProjectDetail.jsx",
+      "app/src/styles/global.css",
+      "app/vite.config.js",
+      "brand-spec.md",
+      "contact.html",
+      "course-data-analysis.html",
+      "course-database.html",
+      "course-machine-learning.html",
+      "course-research-project.html",
+      "course-webgl.html",
+      "experience.html",
+      "index.html",
+      "portfolio.html",
+      "project-line-competition.html",
+      "project-maze-game.html",
+      "project-optarea.html",
+      "project-rag-search.html"
+    ],
+    "html": [
+      "about.html",
+      "app/index.html",
+      "contact.html",
+      "course-data-analysis.html",
+      "course-database.html",
+      "course-machine-learning.html",
+      "course-research-project.html",
+      "course-webgl.html",
+      "experience.html",
+      "index.html",
+      "portfolio.html",
+      "project-line-competition.html",
+      "project-maze-game.html",
+      "project-optarea.html",
+      "project-rag-search.html"
+    ],
+    "css": [
+      "app/src/styles/global.css"
+    ],
+    "scriptsAndComponents": [
+      "app/src/App.jsx",
+      "app/src/components/Detail.jsx",
+      "app/src/components/ErDiagram.jsx",
+      "app/src/components/Footer.jsx",
+      "app/src/components/icons.jsx",
+      "app/src/components/Layout.jsx",
+      "app/src/components/ProjectCard.jsx",
+      "app/src/components/Reveal.jsx",
+      "app/src/components/Sidebar.jsx",
+      "app/src/main.jsx",
+      "app/src/pages/About.jsx",
+      "app/src/pages/Contact.jsx",
+      "app/src/pages/CourseDetail.jsx",
+      "app/src/pages/Experience.jsx",
+      "app/src/pages/Home.jsx",
+      "app/src/pages/NotFound.jsx",
+      "app/src/pages/Portfolio.jsx",
+      "app/src/pages/ProjectDetail.jsx",
+      "app/vite.config.js"
+    ],
+    "assets": [
+      "第七組資料庫管理-產業實習.pdf",
+      "輔大產業實習平台.drawio",
+      "app/package-lock.json",
+      "app/package.json",
+      "app/src/data/courses.json",
+      "app/src/data/projects.json",
+      "brand-spec.md"
+    ]
+  },
+  "screens": [
+    {
+      "file": "about.html",
+      "role": "screen",
+      "implementationNote": "Preserve visual hierarchy, responsive behavior, and interactive states from this screen."
+    },
+    {
+      "file": "app/index.html",
+      "role": "launcher-overview",
+      "implementationNote": "Use this as the navigation/overview entry only; implement each linked screen file as its own route/surface."
+    },
+    {
+      "file": "contact.html",
+      "role": "screen",
+      "implementationNote": "Preserve visual hierarchy, responsive behavior, and interactive states from this screen."
+    },
+    {
+      "file": "course-data-analysis.html",
+      "role": "screen",
+      "implementationNote": "Preserve visual hierarchy, responsive behavior, and interactive states from this screen."
+    },
+    {
+      "file": "course-database.html",
+      "role": "screen",
+      "implementationNote": "Preserve visual hierarchy, responsive behavior, and interactive states from this screen."
+    },
+    {
+      "file": "course-machine-learning.html",
+      "role": "screen",
+      "implementationNote": "Preserve visual hierarchy, responsive behavior, and interactive states from this screen."
+    },
+    {
+      "file": "course-research-project.html",
+      "role": "screen",
+      "implementationNote": "Preserve visual hierarchy, responsive behavior, and interactive states from this screen."
+    },
+    {
+      "file": "course-webgl.html",
+      "role": "screen",
+      "implementationNote": "Preserve visual hierarchy, responsive behavior, and interactive states from this screen."
+    },
+    {
+      "file": "experience.html",
+      "role": "screen",
+      "implementationNote": "Preserve visual hierarchy, responsive behavior, and interactive states from this screen."
+    },
+    {
+      "file": "index.html",
+      "role": "launcher-overview",
+      "implementationNote": "Use this as the navigation/overview entry only; implement each linked screen file as its own route/surface."
+    },
+    {
+      "file": "portfolio.html",
+      "role": "screen",
+      "implementationNote": "Preserve visual hierarchy, responsive behavior, and interactive states from this screen."
+    },
+    {
+      "file": "project-line-competition.html",
+      "role": "screen",
+      "implementationNote": "Preserve visual hierarchy, responsive behavior, and interactive states from this screen."
+    },
+    {
+      "file": "project-maze-game.html",
+      "role": "screen",
+      "implementationNote": "Preserve visual hierarchy, responsive behavior, and interactive states from this screen."
+    },
+    {
+      "file": "project-optarea.html",
+      "role": "screen",
+      "implementationNote": "Preserve visual hierarchy, responsive behavior, and interactive states from this screen."
+    },
+    {
+      "file": "project-rag-search.html",
+      "role": "screen",
+      "implementationNote": "Preserve visual hierarchy, responsive behavior, and interactive states from this screen."
+    }
+  ],
+  "screenFilePolicy": {
+    "mode": "screen-file-first",
+    "entryFileRole": "launcher-overview",
+    "rules": [
+      "Each distinct user-facing screen or surface must be delivered and implemented as its own file/route.",
+      "If a landing page is present or requested, keep it in landing.html and do not merge it into the product app screen.",
+      "When multiple HTML screens exist, index.html is a launcher/overview only; it must not be treated as the combined final UI.",
+      "Keep product app screens, landing pages, platform screens, and OS widget surfaces separate in production code."
+    ]
+  },
+  "appModules": [
+    "Identify domain-specific in-app modules from the exported UI; do not reduce them to generic cards.",
+    "For each major module, implement purpose, default/loading/empty/error/success states, and responsive behavior.",
+    "Keep app modules separate from OS home-screen widgets in the production component model."
+  ],
+  "osWidgets": [
+    "If the export includes home-screen, lock-screen, Live Activity, tablet glance, or Android widget surfaces, implement them as platform quick-access surfaces outside the app UI.",
+    "If none are present, do not invent OS widgets unless the product requirements request them."
+  ],
+  "landingPage": {
+    "detection": "Inspect files and screen names for a marketing/landing page surface. If present, keep it separate from product app screens.",
+    "requiredSections": [
+      "hero",
+      "value props",
+      "product proof/screenshots",
+      "feature proof",
+      "CTA"
+    ]
+  },
+  "tokens": {
+    "source": [
+      "app/src/styles/global.css"
+    ],
+    "required": [
+      "background",
+      "surface",
+      "foreground",
+      "muted text",
+      "border",
+      "accent",
+      "radius",
+      "shadow",
+      "spacing",
+      "type scale",
+      "motion"
+    ],
+    "note": "Extract/freeze tokens before framework implementation so coding tools do not substitute default theme colors or typography."
+  },
+  "interactions": {
+    "source": [
+      "app/src/App.jsx",
+      "app/src/components/Detail.jsx",
+      "app/src/components/ErDiagram.jsx",
+      "app/src/components/Footer.jsx",
+      "app/src/components/icons.jsx",
+      "app/src/components/Layout.jsx",
+      "app/src/components/ProjectCard.jsx",
+      "app/src/components/Reveal.jsx",
+      "app/src/components/Sidebar.jsx",
+      "app/src/main.jsx",
+      "app/src/pages/About.jsx",
+      "app/src/pages/Contact.jsx",
+      "app/src/pages/CourseDetail.jsx",
+      "app/src/pages/Experience.jsx",
+      "app/src/pages/Home.jsx",
+      "app/src/pages/NotFound.jsx",
+      "app/src/pages/Portfolio.jsx",
+      "app/src/pages/ProjectDetail.jsx",
+      "app/vite.config.js"
+    ],
+    "requiredStates": [
+      "default",
+      "hover",
+      "focus",
+      "active",
+      "disabled",
+      "loading",
+      "empty",
+      "error",
+      "success"
+    ],
+    "requiredBehaviors": [
+      "forms/validation where present",
+      "tabs/filters where present",
+      "dialogs/sheets/drawers where present",
+      "copy/generate/share actions where present",
+      "player or quick controls where present"
+    ],
+    "note": "If the prototype is static, derive missing behavior from visible controls and document it before coding."
+  },
+  "responsiveViewports": [
+    {
+      "name": "mobile-compact",
+      "width": 360,
+      "height": 800,
+      "category": "mobile",
+      "mustAvoidHorizontalScroll": true
+    },
+    {
+      "name": "mobile-standard",
+      "width": 390,
+      "height": 844,
+      "category": "mobile",
+      "mustAvoidHorizontalScroll": true
+    },
+    {
+      "name": "mobile-large",
+      "width": 430,
+      "height": 932,
+      "category": "mobile",
+      "mustAvoidHorizontalScroll": true
+    },
+    {
+      "name": "foldable-small-tablet",
+      "width": 600,
+      "height": 960,
+      "category": "foldable-tablet",
+      "mustAvoidHorizontalScroll": true
+    },
+    {
+      "name": "tablet-portrait",
+      "width": 820,
+      "height": 1180,
+      "category": "tablet",
+      "mustAvoidHorizontalScroll": true
+    },
+    {
+      "name": "tablet-landscape",
+      "width": 1024,
+      "height": 768,
+      "category": "tablet",
+      "mustAvoidHorizontalScroll": true
+    },
+    {
+      "name": "laptop",
+      "width": 1366,
+      "height": 768,
+      "category": "desktop",
+      "mustAvoidHorizontalScroll": true
+    },
+    {
+      "name": "desktop",
+      "width": 1440,
+      "height": 900,
+      "category": "desktop",
+      "mustAvoidHorizontalScroll": true
+    },
+    {
+      "name": "wide",
+      "width": 1920,
+      "height": 1080,
+      "category": "wide",
+      "mustAvoidHorizontalScroll": true
+    }
+  ],
+  "implementationChecklist": [
+    "Open entryFile first and map screens, modules, tokens, and interactions.",
+    "Extract tokens before writing framework components.",
+    "Implement app-specific modules with real states instead of generic card grids.",
+    "Preserve or rebuild JS interactions for meaningful UX actions.",
+    "Validate screenshots at desktop/tablet/mobile viewports with no horizontal overflow.",
+    "Keep landing pages, in-app modules, and OS widgets as separate implementation surfaces."
+  ]
+}

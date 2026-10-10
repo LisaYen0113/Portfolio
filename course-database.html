@@ -1,0 +1,573 @@
+
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>資料庫實作 — 顏妤帆</title>
+  <meta name="description" content="資料庫實作：資料表設計、資料庫操作與查詢、資料處理流程的課程實作記錄。" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── tokens ─────────────────────────────────────────────────────────
+       Six variables bound to brand-spec.md. No raw hex below this block. */
+    :root {
+      --bg:      #F1F6F8;
+      --surface: #FFFFFF;
+      --fg:      #33474E;
+      --muted:   #5E7275;
+      --border:  #DCE7EB;
+      --accent:  #8A524D;
+
+      --accent-soft: color-mix(in oklch, #DEBBB3 60%, transparent);
+      --fg-soft:     color-mix(in oklch, var(--fg) 6%, transparent);
+
+      --font-display: 'Inter', 'Noto Sans TC', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang TC', 'Microsoft JhengHei', system-ui, sans-serif;
+      --font-body:    'Inter', 'Noto Sans TC', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang TC', 'Microsoft JhengHei', system-ui, sans-serif;
+      --font-mono:    ui-monospace, 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+
+      --fs-h1: clamp(30px, 4.6vw, 50px);
+      --fs-lead: 19px;
+      --fs-body: 16px;
+      --fs-meta: 13px;
+
+      --gap-xs: 8px;
+      --gap-sm: 12px;
+      --gap-md: 20px;
+      --gap-lg: 32px;
+      --gap-xl: 56px;
+      --container: 1120px;
+      --gutter: 32px;
+
+      --radius: 10px;
+      --radius-lg: 14px;
+    }
+
+    /* ─── reset & base ──────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; scroll-padding-top: 24px; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--font-body);
+      font-size: var(--fs-body);
+      line-height: 1.6;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+    }
+    img, svg { display: block; max-width: 100%; }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; cursor: pointer; }
+    p { text-wrap: pretty; }
+    h1, h2, h3 { text-wrap: balance; }
+    a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+    dl { margin: 0; }
+    dt, dd { margin: 0; }
+
+    /* ─── layout primitives ─────────────────────────────────────────── */
+    .container { max-width: var(--container); margin-inline: auto; padding-inline: var(--gutter); }
+    .section { padding-block: clamp(52px, 7vw, 88px); }
+    .section + .section { border-top: 1px solid var(--border); }
+
+    /* ─── type ──────────────────────────────────────────────────────── */
+    .lead { font-size: var(--fs-lead); line-height: 1.7; color: var(--muted); max-width: 62ch; margin: 0; }
+    .meta { font-family: var(--font-mono); font-size: var(--fs-meta); color: var(--muted); }
+    .num  { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+    /* ─── chrome: sidebar nav ───────────────────────────────────────── */
+    .shell { display: grid; grid-template-columns: auto minmax(0, 1fr); min-height: 100vh; align-items: start; }
+    .sidebar {
+      position: sticky; top: 0; z-index: 20;
+      width: 200px;
+      height: 100vh; height: 100dvh;
+      display: flex; flex-direction: column; gap: var(--gap-lg);
+      padding: 22px 16px;
+      border-right: 1px solid var(--border);
+      transition: width 0.22s ease, padding 0.22s ease;
+    }
+    .sidebar-head { display: flex; flex-direction: column; gap: 6px; }
+    .sb-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .sidebar .logo { display: inline-flex; align-items: center; gap: 9px; min-width: 0; font-family: var(--font-display); font-size: 18px; font-weight: 700; letter-spacing: -0.02em; }
+    .sidebar .logo-name { white-space: nowrap; overflow: hidden; }
+    .sidebar .logo-mark { display: none; width: 34px; height: 34px; place-items: center; border-radius: 10px; background: var(--accent-soft); color: var(--accent); font-size: 15px; font-weight: 700; }
+    .sidebar .meta { font-size: 12px; padding-left: 2px; }
+    .sidebar-nav { display: flex; flex-direction: column; gap: 4px; }
+    .sidebar-nav a {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 12px; border-radius: 10px;
+      font-size: 14px; color: var(--muted);
+      border: 1px solid transparent;
+      transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+    }
+    .sidebar-nav a .ic { display: grid; place-items: center; width: 20px; height: 20px; flex: none; }
+    .sidebar-nav a .ic svg { width: 19px; height: 19px; }
+    .sidebar-nav a .lbl { white-space: nowrap; }
+    .sidebar-nav a:hover { color: var(--fg); border-color: var(--border); }
+    .sidebar-nav a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .sidebar-nav a.is-active {
+      color: var(--fg); font-weight: 600;
+      background: var(--accent-soft);
+      border-color: color-mix(in oklch, var(--accent) 28%, transparent);
+    }
+    /* ── collapse toggle (top-right of sidebar) ── */
+    .sb-toggle {
+      display: grid; place-items: center; flex: none;
+      width: 32px; height: 32px; border-radius: 9px;
+      border: 1px solid var(--border); background: var(--surface); color: var(--muted);
+      transition: color 0.15s ease, border-color 0.15s ease;
+    }
+    .sb-toggle:hover { color: var(--fg); border-color: var(--fg); }
+    .sb-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .sb-toggle svg { width: 16px; height: 16px; transition: transform 0.22s ease; }
+    /* ── collapsed state ── */
+    .shell.is-collapsed .sidebar { width: 60px; padding: 22px 10px; }
+    .shell.is-collapsed .sidebar .logo,
+    .shell.is-collapsed .sidebar .meta,
+    .shell.is-collapsed .sidebar-nav a .lbl { display: none; }
+    .shell.is-collapsed .sb-top { justify-content: center; }
+    .shell.is-collapsed .sidebar-nav a { justify-content: center; padding: 10px 0; }
+    .shell.is-collapsed .sb-toggle svg { transform: rotate(180deg); }
+    @media (max-width: 900px) {
+      .shell { grid-template-columns: 1fr; }
+      .sidebar {
+        width: auto;
+        height: auto; flex-direction: row; align-items: center; justify-content: space-between; flex-wrap: wrap;
+        gap: var(--gap-sm) var(--gap-md); padding: 12px 20px;
+        border-right: 0; border-bottom: 1px solid var(--border);
+        background: color-mix(in oklch, var(--bg) 88%, transparent);
+        backdrop-filter: blur(12px);
+      }
+      .sb-top { gap: 10px; }
+      .sidebar-head { flex-direction: row; align-items: center; }
+      .sidebar .meta { display: none; }
+      .sidebar-nav { flex-direction: row; flex-wrap: wrap; gap: 4px; }
+      .sidebar-nav a { padding: 8px 12px; gap: 8px; }
+      .sidebar-nav a .ic { display: none; }
+      .sb-toggle { display: none; }
+      .shell.is-collapsed .sidebar { width: auto; padding: 12px 20px; }
+      .shell.is-collapsed .sidebar .logo { display: inline-flex; }
+      .shell.is-collapsed .sidebar-nav a .lbl { display: inline; }
+      .shell.is-collapsed .sidebar-nav a { justify-content: flex-start; padding: 8px 12px; }
+      html { scroll-padding-top: 88px; }
+    }
+    .back-link { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; color: var(--muted); transition: color 0.15s ease; }
+    .back-link::before { content: '←'; transition: transform 0.15s ease; }
+    .back-link:hover { color: var(--fg); }
+    .back-link:hover::before { transform: translateX(-3px); }
+    .detail-hero .back-link { margin-bottom: var(--gap-md); }
+    .pagefoot { padding-block: var(--gap-xl); color: var(--muted); font-size: 13px; border-top: 1px solid var(--border); }
+    .pagefoot .row-between { display: flex; align-items: center; justify-content: space-between; gap: var(--gap-md); flex-wrap: wrap; }
+    .pagefoot a:hover { color: var(--fg); }
+
+    /* ─── buttons ───────────────────────────────────────────────────── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 22px;
+      border-radius: var(--radius);
+      border: 1px solid transparent;
+      font-size: 15px; font-weight: 500; letter-spacing: -0.005em;
+      transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    }
+    .btn-primary { background: var(--fg); color: var(--surface); border-color: var(--fg); }
+    .btn-primary:hover { background: color-mix(in oklch, var(--fg) 84%, black); border-color: color-mix(in oklch, var(--fg) 84%, black); }
+
+    /* ─── pill / tag ────────────────────────────────────────────────── */
+    .pill {
+      display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;
+      padding: 5px 11px; background: var(--accent-soft); color: var(--accent);
+      border-radius: 999px; font-family: var(--font-mono); font-size: 11px;
+      font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase;
+    }
+    .tag {
+      display: inline-flex; align-items: center; padding: 4px 9px;
+      background: transparent; color: var(--muted); border: 1px solid var(--border);
+      border-radius: 999px; font-size: 11px; font-family: var(--font-mono); letter-spacing: 0.02em;
+    }
+    .tag.is-todo { border-style: dashed; }
+
+    /* ─── image placeholder (DS-tinted, labelled) ──────────────────── */
+    .ph-img {
+      background: linear-gradient(135deg, var(--accent-soft), var(--fg-soft)), var(--surface);
+      border: 1px solid var(--border); border-radius: var(--radius-lg);
+      aspect-ratio: 16 / 10; display: grid; place-items: center;
+      color: var(--muted); font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.06em;
+    }
+    .content-img { display: block; max-width: 100%; max-height: min(70vh, 720px); width: auto; height: auto; object-fit: contain; justify-self: center; border-radius: var(--radius-lg); }
+
+    /* ─── detail ────────────────────────────────────────────────────── */
+    .detail-hero { padding-top: clamp(40px, 6vw, 72px); }
+    .work-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+    .work-index { font-family: var(--font-mono); font-size: 11px; color: var(--muted); letter-spacing: 0.03em; white-space: nowrap; }
+    .detail-title { font-family: var(--font-display); font-size: var(--fs-h1); font-weight: 700; letter-spacing: -0.028em; line-height: 1.1; margin: 18px 0 0; }
+    .detail-lead { margin-top: 18px; }
+
+    .spec-grid { margin-top: 40px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--gap-lg); border-top: 1px solid var(--fg); padding-top: 22px; }
+    .spec-k { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 7px; }
+    .spec-v { font-size: 15px; font-weight: 500; }
+    .spec-v.is-todo { color: var(--muted); font-weight: 400; }
+    .spec-v .tag { margin: 0 4px 4px 0; }
+    @media (max-width: 780px) { .spec-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--gap-md) var(--gap-lg); } }
+
+    .detail-row { display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: var(--gap-xl); align-items: start; }
+    @media (max-width: 780px) { .detail-row { grid-template-columns: 1fr; gap: var(--gap-md); } }
+    .row-label .idx { display: block; font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 8px; }
+    .row-label h2 { font-family: var(--font-display); font-size: 20px; font-weight: 700; letter-spacing: -0.01em; margin: 0; }
+
+    .prose { max-width: 66ch; }
+    .prose p { margin: 0; }
+
+    .resp-list { list-style: none; margin: 0; padding: 0; }
+    .resp-list li { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 16px; padding: 18px 0; border-top: 1px solid var(--border); }
+    .resp-list li:first-child { border-top: 1px solid var(--fg); }
+    .resp-list .n { font-family: var(--font-mono); font-size: 12px; color: var(--muted); padding-top: 3px; }
+    .resp-list h3 { font-family: var(--font-display); font-size: 16px; font-weight: 600; letter-spacing: -0.005em; margin: 0 0 4px; }
+    .resp-list p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.55; }
+
+    .result { border-left: 3px solid var(--accent); padding: 4px 0 4px 20px; max-width: 60ch; }
+    .result-k { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin: 0 0 8px; }
+    .result-v { font-family: var(--font-display); font-size: 22px; font-weight: 700; letter-spacing: -0.012em; line-height: 1.35; margin: 0 0 8px; }
+    .result p { margin: 0; color: var(--muted); font-size: 14px; max-width: 58ch; }
+
+    .shot-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--gap-md); }
+    @media (max-width: 680px) { .shot-grid { grid-template-columns: 1fr; } }
+    .shot { margin: 0; display: flex; flex-direction: column; gap: 10px; }
+    .shot figcaption { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.04em; color: var(--muted); }
+
+    .todo-block { border: 1px dashed color-mix(in oklch, var(--fg) 24%, var(--border)); border-radius: var(--radius-lg); padding: 18px 20px; background: color-mix(in oklch, var(--fg) 3%, var(--surface)); }
+    .todo-block .todo-k { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin: 0 0 6px; }
+    .todo-block p { margin: 0; color: var(--muted); font-size: 14px; max-width: 62ch; line-height: 1.55; }
+
+    .repo-row { display: flex; align-items: center; justify-content: space-between; gap: var(--gap-md); flex-wrap: wrap; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px 22px; background: var(--surface); }
+    .repo-name { font-family: var(--font-mono); font-size: 13px; color: var(--fg); margin: 0; }
+    .repo-note { font-size: 13px; color: var(--muted); margin: 5px 0 0; max-width: 46ch; }
+
+    /* ─── ER diagram (inline SVG) ──────────────────────────────────── */
+    .erd-figure { margin: 0; }
+    .erd-scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--surface); }
+    .erd { display: block; width: 100%; min-width: 740px; height: auto; }
+    .erd-box { fill: var(--surface); stroke: var(--border); stroke-width: 1; }
+    .erd-head { fill: color-mix(in oklch, var(--fg) 7%, var(--surface)); }
+    .erd-head-text { fill: var(--fg); font-family: var(--font-display); font-size: 13.5px; font-weight: 700; letter-spacing: -0.01em; }
+    .erd-line { stroke: var(--border); stroke-width: 1; }
+    .erd-divider, .erd-row-line { stroke: color-mix(in oklch, var(--border) 62%, var(--surface)); stroke-width: 1; }
+    .erd-badge { font-family: var(--font-mono); font-size: 8.5px; font-weight: 700; letter-spacing: 0.02em; }
+    .erd-badge-pk { fill: var(--accent); }
+    .erd-badge-fk { fill: var(--muted); }
+    .erd-name { fill: var(--fg); font-family: var(--font-mono); font-size: 12px; }
+    .erd-name.is-pk { font-weight: 700; }
+    .erd-edge, .erd-mark { fill: none; stroke: color-mix(in oklch, var(--muted) 62%, var(--surface)); stroke-width: 1.4; }
+    .erd-figure figcaption { margin-top: 12px; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.04em; color: var(--muted); }
+    .erd-legend { list-style: none; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 20px; margin: 16px 0 0; padding: 0; font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
+    .erd-legend li { display: inline-flex; align-items: center; gap: 7px; }
+    .erd-legend .swatch { width: 15px; height: 11px; border: 1px solid var(--border); border-radius: 3px; background: var(--surface); }
+    .erd-legend .b-pk { color: var(--accent); font-weight: 700; }
+    .erd-legend .b-fk { color: var(--muted); font-weight: 700; }
+    .erd-glyph { width: 30px; height: 10px; color: color-mix(in oklch, var(--muted) 62%, var(--surface)); }
+
+    /* ─── ER diagram · versioned layout ────────────────────────────── */
+    .erd-versions { display: flex; flex-direction: column; gap: var(--gap-xl); }
+    .erd-version { display: flex; flex-direction: column; gap: var(--gap-sm); }
+    .erd-version + .erd-version { border-top: 1px solid var(--border); padding-top: var(--gap-lg); }
+    .erd-version-head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 2px; }
+    .erd-version-head h3 { font-family: var(--font-display); font-size: 17px; font-weight: 700; letter-spacing: -0.01em; margin: 0; }
+    .erd-version-lead { font-size: 15px; line-height: 1.7; color: var(--muted); max-width: 62ch; margin: 0 0 4px; }
+    .erd-points { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 8px; }
+    .erd-points li { display: grid; grid-template-columns: max-content 1fr; align-items: baseline; gap: 14px; font-size: 13px; color: var(--muted); }
+    .erd-points .m { font-family: var(--font-mono); font-size: 12px; color: var(--fg); white-space: nowrap; }
+    @media (max-width: 560px) { .erd-points li { grid-template-columns: 1fr; gap: 2px; } }
+
+    /* ─── reveal (respects reduced motion) ──────────────────────────── */
+    @media (prefers-reduced-motion: no-preference) {
+      .reveal { opacity: 0; transform: translateY(16px); transition: opacity 0.6s ease, transform 0.6s ease; }
+      .reveal.in { opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell" id="top">
+    <aside class="sidebar" data-od-id="sidebar">
+      <div class="sidebar-head">
+        <div class="sb-top">
+          <a class="logo" href="index.html" aria-label="顏妤帆 — 作品集">
+            <span class="logo-mark" aria-hidden="true">顏</span>
+            <span class="logo-name">顏妤帆</span>
+          </a>
+          <button class="sb-toggle" type="button" aria-label="收合側邊欄" aria-expanded="true" aria-controls="sb-nav">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m13 6-6 6 6 6" /><path d="m19 6-6 6 6 6" /></svg>
+          </button>
+        </div>
+        <span class="meta">Portfolio · 2026</span>
+      </div>
+      <nav class="sidebar-nav" id="sb-nav" aria-label="主導覽">
+        <a href="index.html" title="首頁"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5.5 9.2V20h13V9.2"/></svg></span><span class="lbl">首頁</span></a>
+        <a href="about.html" title="個人介紹"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.4"/><path d="M5.5 20a6.5 6.5 0 0 1 13 0"/></svg></span><span class="lbl">個人介紹</span></a>
+        <a href="portfolio.html" class="is-active" title="作品集"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 7.5A1.5 1.5 0 0 1 5 6h4l2 2.2h8A1.5 1.5 0 0 1 20.5 9.7v7.8A1.5 1.5 0 0 1 19 19H5a1.5 1.5 0 0 1-1.5-1.5z"/></svg></span><span class="lbl">作品集</span></a>
+        <a href="experience.html" title="技能經歷"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3.5 2.4 5.3 5.6.7-4.2 3.9 1.1 5.6L12 16.9 7.1 19l1.1-5.6-4.2-3.9 5.6-.7z"/></svg></span><span class="lbl">技能經歷</span></a>
+        <a href="contact.html" title="聯絡方式"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5.5" width="18" height="13" rx="2"/><path d="m3.5 7 8.5 6 8.5-6"/></svg></span><span class="lbl">聯絡方式</span></a>
+      </nav>
+    </aside>
+
+    <div class="main-col">
+      <main id="content">
+    <!-- ── 標題 ──────────────────────────────────────────────── -->
+    <section class="section detail-hero" data-od-id="course-hero">
+      <div class="container">
+        <a class="back-link" href="portfolio.html">返回作品集</a>
+        <div class="work-top">
+          <span class="pill">技術案例</span>
+          <span class="work-index">COURSE · 02</span>
+        </div>
+        <h1 class="detail-title">資料庫實作</h1>
+        <p class="lead detail-lead">從需求分析到資料表設計，練習如何用資料庫支撐系統的資料儲存、查詢與處理流程。</p>
+
+        <dl class="spec-grid">
+          <div class="spec">
+            <dt class="spec-k">期間</dt>
+            <dd class="spec-v is-todo">年份待補</dd>
+          </div>
+          <div class="spec">
+            <dt class="spec-k">角色</dt>
+            <dd class="spec-v">個人 · 小組</dd>
+          </div>
+          <div class="spec">
+            <dt class="spec-k">類型</dt>
+            <dd class="spec-v">課程作業</dd>
+          </div>
+          <div class="spec">
+            <dt class="spec-k">技術</dt>
+            <dd class="spec-v">
+              <span class="tag">SQL</span>
+              <span class="tag">待補</span>
+            </dd>
+          </div>
+        </dl>
+      </div>
+    </section>
+
+    <!-- ── 01 背景與問題 ─────────────────────────────────────── -->
+    <section class="section reveal" data-od-id="course-background">
+      <div class="container detail-row">
+        <div class="row-label">
+          <span class="idx">01 — BACKGROUND</span>
+          <h2>背景與問題</h2>
+        </div>
+        <div>
+          <div class="prose">
+            <p>系統要能穩定運作，資料就必須被有結構地儲存與取用。這個作業處理的是「資料該怎麼放、怎麼查」的問題：先釐清需求，再設計能對應需求的資料表與查詢方式。</p>
+          </div>
+          <div class="todo-block" style="margin-top: 20px;">
+            <p class="todo-k">待補 · 課程與題目背景</p>
+            <p>補上課程名稱、題目需求，以及你選擇的資料庫系統。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 02 執行內容 ───────────────────────────────────────── -->
+    <section class="section reveal" data-od-id="course-approach">
+      <div class="container detail-row">
+        <div class="row-label">
+          <span class="idx">02 — APPROACH</span>
+          <h2>執行內容</h2>
+        </div>
+        <ol class="resp-list">
+          <li>
+            <span class="n">01</span>
+            <div>
+              <h3>資料表設計</h3>
+              <p>依需求分析規劃實體關係與正規化，定義主鍵、外鍵與資料表之間的關聯。</p>
+            </div>
+          </li>
+          <li>
+            <span class="n">02</span>
+            <div>
+              <h3>資料庫操作與查詢</h3>
+              <p>撰寫 SQL 進行資料新增、更新、查詢與彙總，並處理多表關聯的查詢需求。</p>
+            </div>
+          </li>
+          <li>
+            <span class="n">03</span>
+            <div>
+              <h3>資料處理流程</h3>
+              <p>整理資料匯入、清理與輸出流程，讓資料能被後續應用穩定使用。</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ── 03 成果 ───────────────────────────────────────────── -->
+    <section class="section reveal" data-od-id="course-outcome">
+      <div class="container detail-row">
+        <div class="row-label">
+          <span class="idx">03 — OUTCOME</span>
+          <h2>成果</h2>
+        </div>
+        <div class="result">
+          <p class="result-k">實作成果</p>
+          <p class="result-v">完成可運作的資料庫與查詢流程</p>
+          <p>以實際資料驗證資料表設計與查詢結果，並記錄設計過程中的取捨；細節待補。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 04 成果截圖 ───────────────────────────────────────── -->
+    <section class="section reveal" data-od-id="course-screenshots">
+      <div class="container detail-row">
+        <div class="row-label">
+          <span class="idx">04 — SCREENS</span>
+          <h2>成果截圖</h2>
+        </div>
+        <div>
+          <p class="lead" style="margin-bottom: 28px;">同一份課程作業有兩個版本：先以個人版建立 8 張資料表的完整關聯，再於小組版收斂為 5 張核心資料表。兩版皆以主鍵（PK）唯一識別、外鍵（FK）建立關聯。</p>
+
+          <div class="erd-versions">
+
+            <article class="erd-version">
+              <div class="erd-version-head">
+                <span class="tag">版本 1.0</span>
+                <h3>個人版 · 輔大產業實習平台</h3>
+              </div>
+              <p class="erd-version-lead">涵蓋學生帳號、合作公司、實習狀態、公告、標籤與收藏等面向，共 8 張資料表。</p>
+              <figure class="erd-figure">
+                <div class="erd-scroll">
+<svg class="erd" viewBox="30 -20 850 990" role="img" aria-label="輔大產業實習平台的資料庫關聯圖，包含 account、company、report、Intership_state、announcement、favorites、subscribe、tag 共 8 張資料表，以及各表之間的主鍵與外鍵關聯">
+                <title>資料庫關聯圖（ER Diagram）</title>
+<path class="erd-edge" d="M165,320 L165,190"/><path class="erd-mark" d="M165,199 L171,190 M165,199 L165,190 M165,199 L159,190"/><path class="erd-mark" d="M171,317 L159,317"/><path class="erd-edge" d="M500,320 L500,270 L730,270 L730,230"/><path class="erd-mark" d="M730,239 L736,230 M730,239 L730,230 M730,239 L724,230"/><path class="erd-mark" d="M506,317 L494,317"/><path class="erd-edge" d="M270,120 L325,120 L325,470 L380,470"/><path class="erd-mark" d="M273,126 L273,114"/><path class="erd-mark" d="M377,476 L377,464"/><path class="erd-edge" d="M630,890 L520,890 L520,790 L410,790"/><path class="erd-mark" d="M419,790 L410,796 M419,790 L410,790 M419,790 L410,784"/><path class="erd-mark" d="M627,896 L627,884"/><path class="erd-edge" d="M410,700 L640,700"/><path class="erd-mark" d="M631,700 L640,706 M631,700 L640,700 M631,700 L640,694"/><path class="erd-mark" d="M413,706 L413,694"/><path class="erd-edge" d="M810,890 L845,890 L845,370 L820,370"/><path class="erd-mark" d="M829,370 L820,376 M829,370 L820,370 M829,370 L820,364"/><path class="erd-mark" d="M807,896 L807,884"/><path class="erd-edge" d="M470,590 L470,610 L700,610 L700,650"/><path class="erd-mark" d="M700,641 L706,650 M700,641 L700,650 M700,641 L694,650"/><path class="erd-mark" d="M476,593 L464,593"/><path class="erd-edge" d="M560,450 L700,450 L700,430"/><path class="erd-mark" d="M700,439 L706,430 M700,439 L700,430 M700,439 L694,430"/><path class="erd-mark" d="M563,456 L563,444"/>
+<rect class="erd-box" x="90" y="10" width="180" height="180" rx="10"/><path class="erd-head" d="M90,40 V20 A10,10 0 0 1 100,10 H260 A10,10 0 0 1 270,20 V40 Z"/><text class="erd-head-text" x="180" y="25" text-anchor="middle" dominant-baseline="central">Intership_state</text><line class="erd-line" x1="90" y1="40" x2="270" y2="40"/><line class="erd-divider" x1="120" y1="40" x2="120" y2="190"/><text class="erd-badge erd-badge-pk" x="105" y="55" text-anchor="middle" dominant-baseline="central">PK</text><text class="erd-name is-pk" x="130" y="55" dominant-baseline="central">intership_id</text><line class="erd-row-line" x1="90" y1="70" x2="270" y2="70"/><text class="erd-badge erd-badge-fk" x="105" y="85" text-anchor="middle" dominant-baseline="central">FK</text><text class="erd-name" x="130" y="85" dominant-baseline="central">account_id</text><line class="erd-row-line" x1="90" y1="100" x2="270" y2="100"/><text class="erd-name" x="130" y="115" dominant-baseline="central">begins</text><line class="erd-row-line" x1="90" y1="130" x2="270" y2="130"/><text class="erd-name" x="130" y="145" dominant-baseline="central">end</text><line class="erd-row-line" x1="90" y1="160" x2="270" y2="160"/><text class="erd-badge erd-badge-fk" x="105" y="175" text-anchor="middle" dominant-baseline="central">FK</text><text class="erd-name" x="130" y="175" dominant-baseline="central">company_id</text>
+<rect class="erd-box" x="640" y="20" width="180" height="210" rx="10"/><path class="erd-head" d="M640,50 V30 A10,10 0 0 1 650,20 H810 A10,10 0 0 1 820,30 V50 Z"/><text class="erd-head-text" x="730" y="35" text-anchor="middle" dominant-baseline="central">report</text><line class="erd-line" x1="640" y1="50" x2="820" y2="50"/><line class="erd-divider" x1="670" y1="50" x2="670" y2="230"/><text class="erd-badge erd-badge-pk" x="655" y="65" text-anchor="middle" dominant-baseline="central">PK</text><text class="erd-name is-pk" x="680" y="65" dominant-baseline="central">report_id</text><line class="erd-row-line" x1="640" y1="80" x2="820" y2="80"/><text class="erd-name" x="680" y="95" dominant-baseline="central">title</text><line class="erd-row-line" x1="640" y1="110" x2="820" y2="110"/><text class="erd-name" x="680" y="125" dominant-baseline="central">content</text><line class="erd-row-line" x1="640" y1="140" x2="820" y2="140"/><text class="erd-name" x="680" y="155" dominant-baseline="central">file</text><line class="erd-row-line" x1="640" y1="170" x2="820" y2="170"/><text class="erd-name" x="680" y="185" dominant-baseline="central">date</text><line class="erd-row-line" x1="640" y1="200" x2="820" y2="200"/><text class="erd-badge erd-badge-fk" x="655" y="215" text-anchor="middle" dominant-baseline="central">FK</text><text class="erd-name" x="680" y="215" dominant-baseline="central">account_id</text>
+<rect class="erd-box" x="60" y="320" width="180" height="270" rx="10"/><path class="erd-head" d="M60,350 V330 A10,10 0 0 1 70,320 H230 A10,10 0 0 1 240,330 V350 Z"/><text class="erd-head-text" x="150" y="335" text-anchor="middle" dominant-baseline="central">company</text><line class="erd-line" x1="60" y1="350" x2="240" y2="350"/><line class="erd-divider" x1="90" y1="350" x2="90" y2="590"/><text class="erd-badge erd-badge-pk" x="75" y="365" text-anchor="middle" dominant-baseline="central">PK</text><text class="erd-name is-pk" x="100" y="365" dominant-baseline="central">company_id</text><line class="erd-row-line" x1="60" y1="380" x2="240" y2="380"/><text class="erd-name" x="100" y="395" dominant-baseline="central">responsibility</text><line class="erd-row-line" x1="60" y1="410" x2="240" y2="410"/><text class="erd-name" x="100" y="425" dominant-baseline="central">phone</text><line class="erd-row-line" x1="60" y1="440" x2="240" y2="440"/><text class="erd-name" x="100" y="455" dominant-baseline="central">info</text><line class="erd-row-line" x1="60" y1="470" x2="240" y2="470"/><text class="erd-name" x="100" y="485" dominant-baseline="central">address</text><line class="erd-row-line" x1="60" y1="500" x2="240" y2="500"/><text class="erd-name" x="100" y="515" dominant-baseline="central">industry</text><line class="erd-row-line" x1="60" y1="530" x2="240" y2="530"/><text class="erd-name" x="100" y="545" dominant-baseline="central">weblink</text><line class="erd-row-line" x1="60" y1="560" x2="240" y2="560"/><text class="erd-name" x="100" y="575" dominant-baseline="central">member</text>
+<rect class="erd-box" x="380" y="320" width="180" height="270" rx="10"/><path class="erd-head" d="M380,350 V330 A10,10 0 0 1 390,320 H550 A10,10 0 0 1 560,330 V350 Z"/><text class="erd-head-text" x="470" y="335" text-anchor="middle" dominant-baseline="central">account</text><line class="erd-line" x1="380" y1="350" x2="560" y2="350"/><line class="erd-divider" x1="410" y1="350" x2="410" y2="590"/><text class="erd-badge erd-badge-pk" x="395" y="365" text-anchor="middle" dominant-baseline="central">PK</text><text class="erd-name is-pk" x="420" y="365" dominant-baseline="central">account_id</text><line class="erd-row-line" x1="380" y1="380" x2="560" y2="380"/><text class="erd-name" x="420" y="395" dominant-baseline="central">username</text><line class="erd-row-line" x1="380" y1="410" x2="560" y2="410"/><text class="erd-name" x="420" y="425" dominant-baseline="central">password</text><line class="erd-row-line" x1="380" y1="440" x2="560" y2="440"/><text class="erd-name" x="420" y="455" dominant-baseline="central">role</text><line class="erd-row-line" x1="380" y1="470" x2="560" y2="470"/><text class="erd-name" x="420" y="485" dominant-baseline="central">email</text><line class="erd-row-line" x1="380" y1="500" x2="560" y2="500"/><text class="erd-name" x="420" y="515" dominant-baseline="central">phone</text><line class="erd-row-line" x1="380" y1="530" x2="560" y2="530"/><text class="erd-name" x="420" y="545" dominant-baseline="central">major</text><line class="erd-row-line" x1="380" y1="560" x2="560" y2="560"/><text class="erd-name" x="420" y="575" dominant-baseline="central">grade</text>
+<rect class="erd-box" x="640" y="310" width="180" height="120" rx="10"/><path class="erd-head" d="M640,340 V320 A10,10 0 0 1 650,310 H810 A10,10 0 0 1 820,320 V340 Z"/><text class="erd-head-text" x="730" y="325" text-anchor="middle" dominant-baseline="central">subscribe</text><line class="erd-line" x1="640" y1="340" x2="820" y2="340"/><line class="erd-divider" x1="670" y1="340" x2="670" y2="430"/><text class="erd-badge erd-badge-fk" x="655" y="355" text-anchor="middle" dominant-baseline="central">FK</text><text class="erd-name" x="680" y="355" dominant-baseline="central">tag_id</text><line class="erd-row-line" x1="640" y1="370" x2="820" y2="370"/><text class="erd-badge erd-badge-fk" x="655" y="385" text-anchor="middle" dominant-baseline="central">FK</text><text class="erd-name" x="680" y="385" dominant-baseline="central">account_id</text><line class="erd-row-line" x1="640" y1="400" x2="820" y2="400"/><text class="erd-name" x="680" y="415" dominant-baseline="central">time</text>
+<rect class="erd-box" x="230" y="640" width="180" height="300" rx="10"/><path class="erd-head" d="M230,670 V650 A10,10 0 0 1 240,640 H400 A10,10 0 0 1 410,650 V670 Z"/><text class="erd-head-text" x="320" y="655" text-anchor="middle" dominant-baseline="central">announcement</text><line class="erd-line" x1="230" y1="670" x2="410" y2="670"/><line class="erd-divider" x1="260" y1="670" x2="260" y2="940"/><text class="erd-badge erd-badge-pk" x="245" y="685" text-anchor="middle" dominant-baseline="central">PK</text><text class="erd-name is-pk" x="270" y="685" dominant-baseline="central">announ_id</text><line class="erd-row-line" x1="230" y1="700" x2="410" y2="700"/><text class="erd-name" x="270" y="715" dominant-baseline="central">title</text><line class="erd-row-line" x1="230" y1="730" x2="410" y2="730"/><text class="erd-badge erd-badge-fk" x="245" y="745" text-anchor="middle" dominant-baseline="central">FK</text><text class="erd-name" x="270" y="745" dominant-baseline="central">tag_id</text><line class="erd-row-line" x1="230" y1="760" x2="410" y2="760"/><text class="erd-name" x="270" y="775" dominant-baseline="central">content</text><line class="erd-row-line" x1="230" y1="790" x2="410" y2="790"/><text class="erd-name" x="270" y="805" dominant-baseline="central">date</text><line class="erd-row-line" x1="230" y1="820" x2="410" y2="820"/><text class="erd-name" x="270" y="835" dominant-baseline="central">unit</text><line class="erd-row-line" x1="230" y1="850" x2="410" y2="850"/><text class="erd-name" x="270" y="865" dominant-baseline="central">staff</text><line class="erd-row-line" x1="230" y1="880" x2="410" y2="880"/><text class="erd-name" x="270" y="895" dominant-baseline="central">staff_phone</text><line class="erd-row-line" x1="230" y1="910" x2="410" y2="910"/><text class="erd-name" x="270" y="925" dominant-baseline="central">attachment</text>
+<rect class="erd-box" x="640" y="650" width="180" height="150" rx="10"/><path class="erd-head" d="M640,680 V660 A10,10 0 0 1 650,650 H810 A10,10 0 0 1 820,660 V680 Z"/><text class="erd-head-text" x="730" y="665" text-anchor="middle" dominant-baseline="central">favorites</text><line class="erd-line" x1="640" y1="680" x2="820" y2="680"/><line class="erd-divider" x1="670" y1="680" x2="670" y2="800"/><text class="erd-badge erd-badge-pk" x="655" y="695" text-anchor="middle" dominant-baseline="central">PK</text><text class="erd-name is-pk" x="680" y="695" dominant-baseline="central">favorites_id</text><line class="erd-row-line" x1="640" y1="710" x2="820" y2="710"/><text class="erd-badge erd-badge-fk" x="655" y="725" text-anchor="middle" dominant-baseline="central">FK</text><text class="erd-name" x="680" y="725" dominant-baseline="central">announ_id</text><line class="erd-row-line" x1="640" y1="740" x2="820" y2="740"/><text class="erd-badge erd-badge-fk" x="655" y="755" text-anchor="middle" dominant-baseline="central">FK</text><text class="erd-name" x="680" y="755" dominant-baseline="central">acccount_id</text><line class="erd-row-line" x1="640" y1="770" x2="820" y2="770"/><text class="erd-name" x="680" y="785" dominant-baseline="central">time</text>
+<rect class="erd-box" x="630" y="860" width="180" height="60" rx="10"/><path class="erd-head" d="M630,890 V870 A10,10 0 0 1 640,860 H800 A10,10 0 0 1 810,870 V890 Z"/><text class="erd-head-text" x="720" y="875" text-anchor="middle" dominant-baseline="central">tag</text><line class="erd-line" x1="630" y1="890" x2="810" y2="890"/><line class="erd-divider" x1="660" y1="890" x2="660" y2="920"/><text class="erd-badge erd-badge-pk" x="645" y="905" text-anchor="middle" dominant-baseline="central">PK</text><text class="erd-name is-pk" x="670" y="905" dominant-baseline="central">tag_id</text>
+              </svg>
+                </div>
+                <figcaption>輔大產業實習平台 · 資料庫關聯圖（ER Diagram）· 8 張資料表</figcaption>
+              </figure>
+<ul class="erd-legend">
+            <li><span class="swatch" aria-hidden="true"></span>資料表</li>
+            <li><span class="b-pk">PK</span>主鍵</li>
+            <li><span class="b-fk">FK</span>外鍵</li>
+            <li><svg class="erd-glyph" viewBox="0 0 30 10" aria-hidden="true"><line x1="2" y1="5" x2="26" y2="5" stroke="currentColor" stroke-width="1.4"/><line x1="14" y1="1" x2="14" y2="9" stroke="currentColor" stroke-width="1.4"/></svg>一對一 / 一</li>
+            <li><svg class="erd-glyph" viewBox="0 0 30 10" aria-hidden="true"><line x1="2" y1="5" x2="20" y2="5" stroke="currentColor" stroke-width="1.4"/><path d="M20,5 L28,1 M20,5 L28,5 M20,5 L28,9" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>一對多 / 多</li>
+          </ul>
+            </article>
+
+            <article class="erd-version">
+              <div class="erd-version-head">
+                <span class="tag">版本 2.0</span>
+                <h3>小組版 · 第七組《產業實習平台》</h3>
+              </div>
+              <p class="erd-version-lead">聚焦實習媒合流程，收斂為 intern、resume、application、job、business 共 5 張資料表。</p>
+              <figure class="erd-figure">
+                <div class="erd-scroll">
+                  <svg class="erd" viewBox="30 -20 780 860" role="img" aria-label="產業實習平台的資料庫關聯圖，包含 intern、resume、application、job、business 共 5 張資料表，以及各表之間的主鍵與外鍵關聯">
+                    <title>產業實習平台 · 資料庫關聯圖（ER Diagram）</title>
+<path class="erd-edge" d="M240,55 L420,55 L420,85 L600,85"/><path class="erd-mark" d="M243,61 L243,49"/><path class="erd-mark" d="M591,85 L600,91 M591,85 L600,85 M591,85 L600,79"/><path class="erd-edge" d="M690,310 L690,380"/><path class="erd-mark" d="M696,313 L684,313"/><path class="erd-mark" d="M690,371 L696,380 M690,371 L690,380 M690,371 L684,380"/><path class="erd-edge" d="M240,425 L420,425 L420,455 L600,455"/><path class="erd-mark" d="M243,431 L243,419"/><path class="erd-mark" d="M591,455 L600,461 M591,455 L600,455 M591,455 L600,449"/><path class="erd-edge" d="M150,560 L150,660"/><path class="erd-mark" d="M156,563 L144,563"/><path class="erd-mark" d="M156,657 L144,657"/>
+<rect class="erd-box" x="60" y="10" width="180" height="270" rx="10"/><path class="erd-head" d="M60,40 V20 A10,10 0 0 1 70,10 H230 A10,10 0 0 1 240,20 V40 Z"/><text class="erd-head-text" x="150" y="25" text-anchor="middle" dominant-baseline="central">business</text><line class="erd-line" x1="60" y1="40" x2="240" y2="40"/><line class="erd-divider" x1="90" y1="40" x2="90" y2="280"/><text class="erd-badge erd-badge-pk" x="75" y="55" text-anchor="middle" dominant-baseline="central">PK</text><text class="erd-name is-pk" x="100" y="55" dominant-baseline="central">businessID</text><line class="erd-row-line" x1="60" y1="70" x2="240" y2="70"/><text class="erd-name" x="100" y="85" dominant-baseline="central">business_name</text><line class="erd-row-line" x1="60" y1="100" x2="240" y2="100"/><text class="erd-name" x="100" y="115" dominant-baseline="central">address</text><line class="erd-row-line" x1="60" y1="130" x2="240" y2="130"/><text class="erd-name" x="100" y="145" dominant-baseline="central">business_description</text><line class="erd-row-line" x1="60" y1="160" x2="240" y2="160"/><text class="erd-name" x="100" y="175" dominant-baseline="central">business_industry</text><line class="erd-row-line" x1="60" y1="190" x2="240" y2="190"/><text class="erd-name" x="100" y="205" dominant-baseline="central">manager</text><line class="erd-row-line" x1="60" y1="220" x2="240" y2="220"/><text class="erd-name" x="100" y="235" dominant-baseline="central">weblink</text><line class="erd-row-line" x1="60" y1="250" x2="240" y2="250"/><text class="erd-name" x="100" y="265" dominant-baseline="central">business_member</text>
+<rect class="erd-box" x="600" y="10" width="180" height="300" rx="10"/><path class="erd-head" d="M600,40 V20 A10,10 0 0 1 610,10 H770 A10,10 0 0 1 780,20 V40 Z"/><text class="erd-head-text" x="690" y="25" text-anchor="middle" dominant-baseline="central">job</text><line class="erd-line" x1="600" y1="40" x2="780" y2="40"/><line class="erd-divider" x1="630" y1="40" x2="630" y2="310"/><text class="erd-badge erd-badge-pk" x="615" y="55" text-anchor="middle" dominant-baseline="central">PK</text><text class="erd-name is-pk" x="640" y="55" dominant-baseline="central">jobID</text><line class="erd-row-line" x1="600" y1="70" x2="780" y2="70"/><text class="erd-badge erd-badge-fk" x="615" y="85" text-anchor="middle" dominant-baseline="central">FK</text><text class="erd-name" x="640" y="85" dominant-baseline="central">businessID</text><line class="erd-row-line" x1="600" y1="100" x2="780" y2="100"/><text class="erd-name" x="640" y="115" dominant-baseline="central">job_description</text><line class="erd-row-line" x1="600" y1="130" x2="780" y2="130"/><text class="erd-name" x="640" y="145" dominant-baseline="central">inter_number</text><line class="erd-row-line" x1="600" y1="160" x2="780" y2="160"/><text class="erd-name" x="640" y="175" dominant-baseline="central">salary</text><line class="erd-row-line" x1="600" y1="190" x2="780" y2="190"/><text class="erd-name" x="640" y="205" dominant-baseline="central">job_title</text><line class="erd-row-line" x1="600" y1="220" x2="780" y2="220"/><text class="erd-name" x="640" y="235" dominant-baseline="central">workplace</text><line class="erd-row-line" x1="600" y1="250" x2="780" y2="250"/><text class="erd-name" x="640" y="265" dominant-baseline="central">announce_date</text><line class="erd-row-line" x1="600" y1="280" x2="780" y2="280"/><text class="erd-name" x="640" y="295" dominant-baseline="central">end_date</text>
+<rect class="erd-box" x="60" y="380" width="180" height="180" rx="10"/><path class="erd-head" d="M60,410 V390 A10,10 0 0 1 70,380 H230 A10,10 0 0 1 240,390 V410 Z"/><text class="erd-head-text" x="150" y="395" text-anchor="middle" dominant-baseline="central">intern</text><line class="erd-line" x1="60" y1="410" x2="240" y2="410"/><line class="erd-divider" x1="90" y1="410" x2="90" y2="560"/><text class="erd-badge erd-badge-pk" x="75" y="425" text-anchor="middle" dominant-baseline="central">PK</text><text class="erd-name is-pk" x="100" y="425" dominant-baseline="central">internID</text><line class="erd-row-line" x1="60" y1="440" x2="240" y2="440"/><text class="erd-name" x="100" y="455" dominant-baseline="central">name</text><line class="erd-row-line" x1="60" y1="470" x2="240" y2="470"/><text class="erd-name" x="100" y="485" dominant-baseline="central">dep</text><line class="erd-row-line" x1="60" y1="500" x2="240" y2="500"/><text class="erd-name" x="100" y="515" dominant-baseline="central">phone</text><line class="erd-row-line" x1="60" y1="530" x2="240" y2="530"/><text class="erd-name" x="100" y="545" dominant-baseline="central">email</text>
+<rect class="erd-box" x="600" y="380" width="180" height="180" rx="10"/><path class="erd-head" d="M600,410 V390 A10,10 0 0 1 610,380 H770 A10,10 0 0 1 780,390 V410 Z"/><text class="erd-head-text" x="690" y="395" text-anchor="middle" dominant-baseline="central">application</text><line class="erd-line" x1="600" y1="410" x2="780" y2="410"/><line class="erd-divider" x1="630" y1="410" x2="630" y2="560"/><text class="erd-badge erd-badge-pk" x="615" y="425" text-anchor="middle" dominant-baseline="central">PK</text><text class="erd-name is-pk" x="640" y="425" dominant-baseline="central">applicationID</text><line class="erd-row-line" x1="600" y1="440" x2="780" y2="440"/><text class="erd-badge erd-badge-fk" x="615" y="455" text-anchor="middle" dominant-baseline="central">FK</text><text class="erd-name" x="640" y="455" dominant-baseline="central">internID</text><line class="erd-row-line" x1="600" y1="470" x2="780" y2="470"/><text class="erd-badge erd-badge-fk" x="615" y="485" text-anchor="middle" dominant-baseline="central">FK</text><text class="erd-name" x="640" y="485" dominant-baseline="central">jobID</text><line class="erd-row-line" x1="600" y1="500" x2="780" y2="500"/><text class="erd-name" x="640" y="515" dominant-baseline="central">application_state</text><line class="erd-row-line" x1="600" y1="530" x2="780" y2="530"/><text class="erd-name" x="640" y="545" dominant-baseline="central">application_date</text>
+<rect class="erd-box" x="60" y="660" width="180" height="150" rx="10"/><path class="erd-head" d="M60,690 V670 A10,10 0 0 1 70,660 H230 A10,10 0 0 1 240,670 V690 Z"/><text class="erd-head-text" x="150" y="675" text-anchor="middle" dominant-baseline="central">resume</text><line class="erd-line" x1="60" y1="690" x2="240" y2="690"/><line class="erd-divider" x1="90" y1="690" x2="90" y2="810"/><text class="erd-badge erd-badge-pk" x="75" y="705" text-anchor="middle" dominant-baseline="central">PK</text><text class="erd-name is-pk" x="100" y="705" dominant-baseline="central">resumeID</text><line class="erd-row-line" x1="60" y1="720" x2="240" y2="720"/><text class="erd-badge erd-badge-fk" x="75" y="735" text-anchor="middle" dominant-baseline="central">FK</text><text class="erd-name" x="100" y="735" dominant-baseline="central">internID</text><line class="erd-row-line" x1="60" y1="750" x2="240" y2="750"/><text class="erd-name" x="100" y="765" dominant-baseline="central">content</text><line class="erd-row-line" x1="60" y1="780" x2="240" y2="780"/><text class="erd-name" x="100" y="795" dominant-baseline="central">experiences</text>
+                  </svg>
+                </div>
+                <figcaption>產業實習平台 · 資料庫關聯圖（ER Diagram）· 5 張資料表</figcaption>
+              </figure>
+<ul class="erd-legend">
+            <li><span class="swatch" aria-hidden="true"></span>資料表</li>
+            <li><span class="b-pk">PK</span>主鍵</li>
+            <li><span class="b-fk">FK</span>外鍵</li>
+            <li><svg class="erd-glyph" viewBox="0 0 30 10" aria-hidden="true"><line x1="2" y1="5" x2="26" y2="5" stroke="currentColor" stroke-width="1.4"/><line x1="14" y1="1" x2="14" y2="9" stroke="currentColor" stroke-width="1.4"/></svg>一對一 / 一</li>
+            <li><svg class="erd-glyph" viewBox="0 0 30 10" aria-hidden="true"><line x1="2" y1="5" x2="20" y2="5" stroke="currentColor" stroke-width="1.4"/><path d="M20,5 L28,1 M20,5 L28,5 M20,5 L28,9" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>一對多 / 多</li>
+          </ul>
+              <ul class="erd-points">
+                <li><span class="m">intern ↔ resume</span><span>一對一 — 每位實習生對應一份履歷表</span></li>
+                <li><span class="m">intern → application</span><span>一對多 — 實習生可投遞多份申請</span></li>
+                <li><span class="m">job → application</span><span>一對多 — 每筆職缺收到多份申請</span></li>
+                <li><span class="m">business → job</span><span>一對多 — 企業可發布多筆實習職缺</span></li>
+              </ul>
+            </article>
+
+          </div>
+
+          <figure class="shot" style="margin-top: 28px; max-width: 620px;">
+            <div class="ph-img" aria-label="查詢結果畫面待補"><span>圖片 · 待補</span></div>
+            <figcaption>查詢結果與資料畫面待補</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 05 相關連結 ───────────────────────────────────────── -->
+    <section class="section reveal" data-od-id="course-links">
+      <div class="container detail-row">
+        <div class="row-label">
+          <span class="idx">05 — LINKS</span>
+          <h2>相關連結</h2>
+        </div>
+        <div class="repo-row">
+          <div>
+            <p class="repo-name">github.com / 待補</p>
+            <p class="repo-note">尚未提供公開連結。補上 GitHub 儲存庫網址後，即可由此前往檢視。</p>
+          </div>
+          <a class="btn btn-primary" href="#" aria-label="在 GitHub 檢視資料庫實作">在 GitHub 檢視</a>
+        </div>
+      </div>
+    </section>
+      </main>
+
+      <footer class="pagefoot" data-od-id="footer">
+        <div class="container row-between">
+          <span>© 2026 顏妤帆</span>
+          <span class="meta"><a href="portfolio.html">返回作品集 ↑</a></span>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var reveals = document.querySelectorAll('.reveal');
+      var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if ('IntersectionObserver' in window && !reduce) {
+        var rIO = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) { entry.target.classList.add('in'); rIO.unobserve(entry.target); }
+          });
+        }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+        reveals.forEach(function (el) { rIO.observe(el); });
+      } else {
+        reveals.forEach(function (el) { el.classList.add('in'); });
+      }
+    })();
+  </script>
+
+  <script>
+    (function () {
+      var shell = document.querySelector('.shell');
+      var toggle = document.querySelector('.sb-toggle');
+      if (!shell || !toggle) return;
+      var KEY = 'sb-collapsed';
+      var saved = null;
+      try { saved = localStorage.getItem(KEY); } catch (e) {}
+      if (saved === '1') shell.classList.add('is-collapsed');
+
+      function sync() {
+        var collapsed = shell.classList.contains('is-collapsed');
+        toggle.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+        toggle.setAttribute('aria-label', collapsed ? '展開側邊欄' : '收合側邊欄');
+      }
+      sync();
+      toggle.addEventListener('click', function () {
+        shell.classList.toggle('is-collapsed');
+        try { localStorage.setItem(KEY, shell.classList.contains('is-collapsed') ? '1' : '0'); } catch (e) {}
+        sync();
+      });
+    })();
+  </script>
+</body>
+</html>

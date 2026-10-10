@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <title>機器人大變身</title>
+    <script src="three.js-master/build/three.js"></script>
+    <script src="three.js-master/examples/js/controls/OrbitControls.js"></script>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        canvas {
+            display: block;
+        }
+
+        #btnWalk {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            padding: 10px;
+            font-size: 16px;
+            background-color: #f1f1f1;
+            border: 1px solid #ccc;
+            cursor: pointer;
+        }
+
+        #btnRun {
+            position: fixed;
+            top: 60px;
+            left: 10px;
+            padding: 10px;
+            font-size: 16px;
+            background-color: #f1f1f1;
+            border: 1px solid #ccc;
+            cursor: pointer;
+        }
+
+        #btnfast {
+            position: fixed;
+            top: 110px;
+            left: 10px;
+            padding: 10px;
+            font-size: 16px;
+            background-color: #f1f1f1;
+            border: 1px solid #ccc;
+            cursor: pointer;
+        }
+
+        #btnWave {
+            position: fixed;
+            top: 160px;
+            left: 10px;
+            padding: 10px;
+            font-size: 16px;
+            background-color: #f1f1f1;
+            border: 1px solid #ccc;
+            cursor: pointer;
+        }
+
+        #btnHug {
+            position: fixed;
+            top: 210px;
+            left: 10px;
+            padding: 10px;
+            font-size: 16px;
+            background-color: #f1f1f1;
+            border: 1px solid #ccc;
+            cursor: pointer;
+        }
+
+        #btnSad {
+            position: fixed;
+            top: 260px;
+            left: 10px;
+            padding: 10px;
+            font-size: 16px;
+            background-color: #f1f1f1;
+            border: 1px solid #ccc;
+            cursor: pointer;
+        }
+
+        #btnStand {
+            position: fixed;
+            top: 310px;
+            left: 10px;
+            padding: 10px;
+            font-size: 16px;
+            background-color: #dbe3f2;
+            border: 1px solid #babeca;
+            cursor: pointer;
+        }
+
+        #btnFall {
+            position: fixed;
+            top: 360px;
+            left: 10px;
+            padding: 10px;
+            font-size: 16px;
+            background-color: #f1f1f1;
+            border: 1px solid #ccc;
+            cursor: pointer;
+        }
+
+        #btndance {
+            position: fixed;
+            top: 410px;
+            left: 10px;
+            padding: 10px;
+            font-size: 16px;
+            background-color: #f1f1f1;
+            border: 1px solid #ccc;
+            cursor: pointer;
+        }
+
+        p{
+            position: fixed;
+            top: 10px;
+            padding: 10px;
+            font-size: 16px;
+        }
+        .yen{
+            position: fixed;
+            top: 500px;
+            padding: 10px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+
+<body>
+    <p>換動作前先立正</p>
+    <p class="yen">412402311 顏妤帆</p>
+    <button id="btnWalk">走路</button>
+    <button id="btnRun">快走</button>
+    <button id="btnfast">快跑</button>
+    <button id="btnWave">招手</button>
+    <button id="btnHug">抱抱</button>
+    <button id="btnSad">沮喪</button>
+    <button id="btnStand">立正</button>
+    <button id="btnFall">跌倒</button>
+    <button id="btndance">跳舞</button>
+
+    <script>
+        // 建立場景
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0xeeeeee);
+
+        // 建立相機
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 15;
+
+        // 建立渲染器
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // 加入軌道控制器
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+        // 紙盒人的材質
+        const boxMaterial = new THREE.MeshStandardMaterial({ color: 0xc7b98c });
+        const eyeMaterial = new THREE.MeshStandardMaterial({ color: 0x000000 });
+        const mouthMaterial = new THREE.MeshStandardMaterial({ color: 0x000000 });
+
+        // 建立光源
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+        scene.add(ambientLight);
+
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+        directionalLight.position.set(10, 10, 10);
+        scene.add(directionalLight);
+
+        // 建立骨架結構
+        const rootBone = new THREE.Bone();
+        rootBone.position.set(0, 0, 0);
+
+        const bodyBone = new THREE.Bone();
+        bodyBone.position.set(0, 0, 0);
+        rootBone.add(bodyBone);
+
+        const leftArmBone = new THREE.Bone();
+        leftArmBone.position.set(-2.7, 2, 0);
+        bodyBone.add(leftArmBone);
+
+        const rightArmBone = new THREE.Bone();
+        rightArmBone.position.set(2.7, 2, 0);
+        bodyBone.add(rightArmBone);
+
+        const leftLegBone = new THREE.Bone();
+        leftLegBone.position.set(-1, -2.5, 0);
+        bodyBone.add(leftLegBone);
+
+        const rightLegBone = new THREE.Bone();
+        rightLegBone.position.set(1, -2.5, 0);
+        bodyBone.add(rightLegBone);
+
+        // 建立身體
+        const bodyGeometry = new THREE.BoxGeometry(4, 5, 2);
+        const bodyMesh = new THREE.SkinnedMesh(bodyGeometry, boxMaterial);
+        bodyMesh.add(rootBone);
+
+        // 綁定骨架
+        const skeleton = new THREE.Skeleton([rootBone, bodyBone, leftArmBone, rightArmBone, leftLegBone, rightLegBone]);
+        bodyMesh.bind(skeleton);
+
+        // 頭部
+        const headGeometry = new THREE.BoxGeometry(6, 4, 3);
+        const headMesh = new THREE.Mesh(headGeometry, boxMaterial);
+        headMesh.position.set(0, 4.5, 0);
+        bodyBone.add(headMesh);
+
+        // 眼睛
+        const eyeGeometry = new THREE.CircleGeometry(0.3, 32);
+        const leftEye = new THREE.Mesh(eyeGeometry, eyeMaterial);
+        const rightEye = leftEye.clone();
+
+        leftEye.position.set(-1, 0.5, 1.6);
+        rightEye.position.set(1, 0.5, 1.6);
+
+        headMesh.add(leftEye);
+        headMesh.add(rightEye);
+
+        // 嘴巴
+        const mouthGeometry = new THREE.BufferGeometry();
+        const mouthVertices = new Float32Array([
+            0, 0, 0.1,
+            -0.5, -0.5, 0.1,
+            0.5, -0.5, 0.1,
+        ]);
+        mouthGeometry.attributes.position = new THREE.BufferAttribute(mouthVertices, 3);
+        mouthGeometry.index = new THREE.BufferAttribute(new Uint16Array([0, 1, 2]), 1);
+        const mouth = new THREE.Mesh(mouthGeometry, mouthMaterial);
+        mouth.position.set(0, -0.3, 1.6);
+        headMesh.add(mouth);
+
+        // 左右手臂
+        const armGeometry = new THREE.BoxGeometry(1, 4, 1);
+        armGeometry.translate(0, -2, 0);
+
+        const leftArmMesh = new THREE.Mesh(armGeometry, boxMaterial);
+        const rightArmMesh = leftArmMesh.clone();
+
+        leftArmBone.add(leftArmMesh);
+        rightArmBone.add(rightArmMesh);
+
+        // 左右腳
+        const legGeometry = new THREE.BoxGeometry(1.5, 3, 1.5);
+        legGeometry.translate(0, -1.5, 0);
+
+        const leftLegMesh = new THREE.Mesh(legGeometry, boxMaterial);
+        const rightLegMesh = leftLegMesh.clone();
+
+        leftLegBone.add(leftLegMesh);
+        rightLegBone.add(rightLegMesh);
+
+        // 加入場景
+        scene.add(bodyMesh);
+
+        // 狀態控制
+        let isWalking = false;
+        let isRunning = false;
+        let isfasting = false;
+        let isWaving = false;
+        let isHugging = false;
+        let isSad = false;
+        let isStanding = false;
+        let isFalling = false;
+        let isdancing = false;
+
+        let walkSpeed = 0.05;
+        let runSpeed = 0.1;
+        let fastSpeed = 0.1;
+        let waveSpeed = 0.1;
+        let hugSpeed = 0.05;
+        let sadSpeed = 0.05;
+        let danceSpeed = 0.1;
+
+        let walkAngle = 0;
+
+        document.getElementById('btnWalk').addEventListener('click', () => {
+            isWalking = !isWalking;
+            isRunning = false;
+            isfasting = false;
+            isWaving = false;
+            isHugging = false;
+            isSad = false;
+            isdancing = false;
+            isStanding = false;
+            isFalling = false; 
+        });
+
+        document.getElementById('btnRun').addEventListener('click', () => {
+            isRunning = !isRunning;
+            isWalking = false;
+            isfasting = false;
+            isWaving = false;
+            isHugging = false;
+            isSad = false;
+            isdancing = false;
+            isStanding = false;
+            isFalling = false; 
+        });
+
+        document.getElementById('btnfast').addEventListener('click', () => {
+            isfasting = !isfasting;
+            isWalking = false;
+            isRunning = false;
+            isWaving = false;
+            isHugging = false;
+            isSad = false;
+            isdancing = false;
+            isStanding = false;
+            isFalling = false; 
+        });
+
+        document.getElementById('btnWave').addEventListener('click', () => {
+            isWaving = !isWaving;
+            isWalking = false;
+            isRunning = false;
+            isfasting = false;
+            isHugging = false;
+            isSad = false;
+            isdancing = false;
+            isStanding = false;
+            isFalling = false; 
+        });
+
+        document.getElementById('btnHug').addEventListener('click', () => {
+            isHugging = !isHugging;
+            isWalking = false;
+            isRunning = false;
+            isfasting = false;
+            isWaving = false;
+            isSad = false;
+            isdancing = false;
+            isStanding = false;
+            isFalling = false; 
+        });
+
+        document.getElementById('btnSad').addEventListener('click', () => {
+            isSad = !isSad;
+            isWalking = false;
+            isRunning = false;
+            isfasting = false;
+            isWaving = false;
+            isHugging = false;
+            isdancing = false;
+            isStanding = false;
+            isFalling = false; 
+        });
+
+        document.getElementById('btnStand').addEventListener('click', () => {
+            isStanding = true; 
+            isWalking = false;
+            isRunning = false;
+            isfasting = false;
+            isWaving = false;
+            isHugging = false;
+            isSad = false;
+            isdancing = false;
+            isFalling = false; 
+        });
+
+        document.getElementById('btnFall').addEventListener('click', () => {
+            isFalling = !isFalling; 
+            isWalking = false;
+            isRunning = false;
+            isfasting = false;
+            isWaving = false;
+            isHugging = false;
+            isSad = false;
+            isStanding = false;
+            isdancing = false;
+        });
+
+        document.getElementById('btndance').addEventListener('click', () => {
+            isdancing = !isdancing;
+            isFalling = false; 
+            isWalking = false;
+            isRunning = false;
+            isfasting = false;
+            isWaving = false;
+            isHugging = false;
+            isSad = false;
+            isStanding = false;
+        });
+
+        // 更新動畫
+        function update() {
+            requestAnimationFrame(update);
+
+            let currentSpeed = 0;
+            let currentAngle = walkAngle;
+
+ 
+            if (isRunning) {
+                currentSpeed = runSpeed;  
+            } else if (isWalking) {
+                currentSpeed = walkSpeed; 
+            } else if (isfasting) {
+                currentSpeed = fastSpeed;  
+            } else if (isWaving) {
+                currentSpeed = waveSpeed;   
+            } else if (isHugging) {
+                currentSpeed = hugSpeed;   
+            } else if (isSad) {
+                currentSpeed = sadSpeed;   
+            }else if (isdancing) {
+                currentSpeed = danceSpeed;   
+            }
+
+            if (isWalking || isRunning || isfasting || isWaving || isHugging || isSad||isdancing) {
+                walkAngle += currentSpeed;
+            }
+
+            let swingAngle = 0;
+
+            if (isRunning) {
+                swingAngle = Math.sin(currentAngle) * Math.PI / 4;
+                leftArmBone.rotation.x = swingAngle;
+                rightArmBone.rotation.x = -swingAngle;
+                leftLegBone.rotation.x = -swingAngle;
+                rightLegBone.rotation.x = swingAngle;
+
+            } else if (isWalking) {
+                swingAngle = Math.sin(currentAngle) * Math.PI / 6;   //幅度較小
+                leftArmBone.rotation.x = swingAngle;
+                rightArmBone.rotation.x = -swingAngle;
+                leftLegBone.rotation.x = -swingAngle;
+                rightLegBone.rotation.x = swingAngle;
+
+            } else if (isfasting) {
+                swingAngle = Math.sin(currentAngle) * Math.PI / 2;  
+                const bodyRotation = Math.sin(currentAngle * 0.5) * Math.PI / 8; 
+                bodyBone.rotation.y = bodyRotation; 
+                leftArmBone.rotation.x = swingAngle;
+                rightArmBone.rotation.x = -swingAngle;
+                leftLegBone.rotation.x = -swingAngle;
+                rightLegBone.rotation.x = swingAngle;
+
+            } else if (isWaving) {
+                swingAngle = Math.sin(currentAngle) * Math.PI / 8; // 僅左右擺動的幅度
+                rightArmBone.rotation.x = -Math.PI / 1.5;  // 讓右臂垂直舉起
+                rightArmBone.rotation.z = swingAngle;    // 左右擺動
+
+            } else if (isHugging) {
+                rightArmBone.rotation.x = -Math.PI / 1.5; // 右手舉高
+                leftArmBone.rotation.x = -Math.PI / 1.5;  // 左手舉高
+                headMesh.rotation.x = -Math.PI / 8;  // 微微抬頭
+
+            } else if (isSad) {
+                headMesh.rotation.x = Math.PI / 4;  // 頭部低下
+
+            } else if (isStanding) {
+                headMesh.rotation.x = 0;  // 頭部保持正直
+                leftArmBone.rotation.x = 0;  // 左手垂直向下
+                leftArmBone.rotation.z = 0;  
+                rightArmBone.rotation.x = 0;  // 右手垂直向下
+                rightArmBone.rotation.z = 0;
+                leftLegBone.rotation.x = 0;  // 左腿直立
+                rightLegBone.rotation.x = 0;  // 右腿直立
+                bodyBone.rotation.y = 0;    // 身體保持筆直
+                bodyBone.rotation.x = 0;
+
+            }else if (isFalling) {
+
+                bodyBone.rotation.x = -Math.PI / 6;  // 軀幹向後傾
+        
+                headMesh.rotation.x = -Math.PI / 8; // 微微向上抬頭
+        
+                leftArmBone.rotation.x = Math.PI / 4;  // 左手向前伸
+                rightArmBone.rotation.x = Math.PI / 4; // 右手向前伸
+        
+                leftArmBone.rotation.z = -Math.PI / 8; // 左手微微張開
+                rightArmBone.rotation.z = Math.PI / 8; // 右手微微張開
+        
+                leftLegBone.rotation.x = Math.PI / 6;  // 左腿彎曲支撐
+                rightLegBone.rotation.x = -Math.PI / 6; // 右腿向後伸展
+            }else if(isdancing){
+                swingAngle = Math.sin(currentAngle) * Math.PI / 8; // 僅左右擺動的幅度
+                const bodyRotation = Math.sin(currentAngle * 0.5) * Math.PI / 8; 
+                bodyBone.rotation.y = bodyRotation; 
+                rightArmBone.rotation.x = -Math.PI / 1.5;  // 讓右臂垂直舉起
+                rightArmBone.rotation.z = swingAngle;    // 左右擺動
+                leftArmBone.rotation.x = -Math.PI / 1.5;  // 讓右臂垂直舉起
+                leftArmBone.rotation.z = swingAngle;    // 左右擺動
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        // 調整視窗大小
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        update();
+    </script>
+</body>
+
+</html>
