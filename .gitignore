@@ -16,6 +16,8 @@ huggingface.webp
 大專生研究計畫書.pdf
 專題系統概述文件.pdf
 顏妤帆_輔仁大學資訊管理學系_ 幫幫牆 (1).pdf
+第七組資料庫管理-產業實習.pdf
+輔大產業實習平台.drawio
 
 # 之後若再往根目錄丟這類檔案，一律不進版控（僅限根目錄，不影響 app/ 與 design-drafts/ 的素材）
 /*.pdf
@@ -28,3 +30,4 @@ huggingface.webp
 /*.webp
 /*.docx
 /*.pptx
+/*.drawio
