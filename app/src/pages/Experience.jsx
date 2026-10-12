@@ -19,6 +19,10 @@ const COURSE_HIGHLIGHTS = [
   "資料庫管理 91",
 ];
 
+// 證照區塊先不顯示（2026-10-12，取得年份尚未確認）。要放回來就把 SHOW_CERTS 改成
+// true，並把下面「技能」的編號從 02 改回 03。
+const SHOW_CERTS = false;
+
 const CERTS = [
   { n: "01", h: "Google Cloud 雲端認證", note: "取得年份待補" },
   { n: "02", h: "AWS 雲端認證", note: "取得年份待補" },
@@ -61,7 +65,7 @@ export default function Experience() {
       <Reveal as="header" className="page-head" data-od-id="experience-head">
         <span className="eyebrow">技能經歷</span>
         <h1 className="page-title">技能經歷</h1>
-        <p className="page-intro">學歷、證照與技能，以及在專案中實際使用的能力。</p>
+        <p className="page-intro">學歷與技能，以及在專案中實際使用的能力。</p>
       </Reveal>
 
       <Reveal className="section" data-od-id="education">
@@ -95,25 +99,27 @@ export default function Experience() {
         </div>
       </Reveal>
 
-      <Reveal className="section" data-od-id="certifications">
-        <div className="section-head">
-          <span className="section-idx">02 — CERTIFICATIONS</span>
-          <h2 className="section-title">證照</h2>
-        </div>
-        <div className="cert-list">
-          {CERTS.map((c) => (
-            <div className="cert" key={c.h}>
-              <div className="cert-n">{c.n}</div>
-              <div className="cert-h">{c.h}</div>
-              <div className="cert-note">{c.note}</div>
-            </div>
-          ))}
-        </div>
-      </Reveal>
+      {SHOW_CERTS && (
+        <Reveal className="section" data-od-id="certifications">
+          <div className="section-head">
+            <span className="section-idx">02 — CERTIFICATIONS</span>
+            <h2 className="section-title">證照</h2>
+          </div>
+          <div className="cert-list">
+            {CERTS.map((c) => (
+              <div className="cert" key={c.h}>
+                <div className="cert-n">{c.n}</div>
+                <div className="cert-h">{c.h}</div>
+                <div className="cert-note">{c.note}</div>
+              </div>
+            ))}
+          </div>
+        </Reveal>
+      )}
 
       <Reveal className="section" data-od-id="skills">
         <div className="section-head">
-          <span className="section-idx">03 — SKILLS</span>
+          <span className="section-idx">02 — SKILLS</span>
           <h2 className="section-title">技能</h2>
         </div>
         <div className="skills-grid">

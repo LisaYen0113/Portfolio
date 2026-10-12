@@ -2,24 +2,21 @@ import { useEffect } from "react";
 import Footer from "../components/Footer.jsx";
 import Reveal from "../components/Reveal.jsx";
 
+const EMAIL = "yenlisa0113@gmail.com";
+const GITHUB = "https://github.com/LisaYen0113";
+
 const CONTACTS = [
   {
     k: "Email",
-    v: "your.email@example.com",
+    v: EMAIL,
     note: "如需合作或進一步了解，歡迎來信。",
-    href: "mailto:your.email@example.com",
+    href: `mailto:${EMAIL}`,
   },
   {
     k: "GitHub",
-    v: "github.com/待補",
+    v: "github.com/LisaYen0113",
     note: "專案原始碼與實作紀錄。",
-    href: "#",
-  },
-  {
-    k: "作品集",
-    v: "Portfolio · 2026",
-    note: "本作品集收錄專題、課程實作與競賽企劃。",
-    href: "#",
+    href: GITHUB,
   },
 ];
 

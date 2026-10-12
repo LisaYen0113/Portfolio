@@ -2,6 +2,8 @@
 
 This archive is the source of truth for turning the design into production code. Start from `app/index.html`, then preserve the visual system, responsive behavior, and interactions found in the exported files.
 
+**Location note (2026-10-12):** the static design screens named below now live in `design-drafts/` (e.g. `design-drafts/about.html`), together with the images they reference in `design-drafts/assets/`. `DESIGN-HANDOFF.md`, `DESIGN-MANIFEST.json` and `brand-spec.md` remain at the repo root. Every bare screen filename in this document and in the manifest is relative to `design-drafts/`. Note that `app/index.html` here means the exported launcher screen, which is **not** the same file as the repo's `app/index.html` (that one is the Vite entry shell).
+
 ## Implementation target
 - Build production UI from the exported design, not a loose reinterpretation.
 - Preserve typography scale, spacing rhythm, color tokens, border radii, shadows, motion timing, and component states.
