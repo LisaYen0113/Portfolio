@@ -110,55 +110,54 @@
   {
     "id": "machine-learning",
     "num": "03",
-    "pill": "技術筆記",
-    "title": "機器學習課程",
-    "lead": "整理機器學習課程中的模型訓練流程與學習型態比較，累積成可複用的技術筆記。",
-    "listTitle": "機器學習課程",
-    "listDesc": "整理模型訓練流程與學習型態比較，累積成可複用的技術筆記。",
-    "listForm": "技術筆記",
+    "pill": "課程專題",
+    "title": "糖尿病發作預測模型",
+    "lead": "以 Pima Indians Diabetes Dataset 建立 Keras 二元分類網路，透過六組架構與訓練參數的對照實驗，找出準確率與泛化能力之間的平衡點。",
+    "listTitle": "糖尿病發作預測模型",
+    "listDesc": "以 Pima Indians 資料集訓練二元分類網路，用六組對照實驗比較模型架構與正則化對泛化能力的影響。",
+    "listForm": "課程專題",
     "spec": [
-      { "k": "年份", "v": "待補", "todo": true },
-      { "k": "專案角色", "v": "個人", "todo": false },
-      { "k": "專案類型", "v": "課程實作", "todo": false },
-      { "k": "技術", "v": "Python", "todo": false }
+      { "k": "課程", "v": "資料處理程式設計", "todo": false },
+      { "k": "學期", "v": "113 學年度第 2 學期", "todo": false },
+      { "k": "專案角色", "v": "小組 · 模型訓練與調參", "todo": false },
+      { "k": "技術", "v": "Python · Keras · pandas", "todo": false }
     ],
     "flow": [
       {
         "type": "prose",
         "idx": "01 — PROBLEM",
         "heading": "背景與問題",
-        "text": "機器學習課程涵蓋監督式、非監督式等不同學習型態。這份筆記把課堂概念整理成可對照的流程，方便日後回顧與實作。",
-        "todo": "課程範圍與資料集待補"
+        "text": "Pima Indians Diabetes Dataset 收錄 768 位皮馬印第安女性的生理量測，包含懷孕次數、血糖、血壓、皮褶厚度、胰島素、BMI、糖尿病家族指數與年齡 8 個特徵，以及一個二元目標 Outcome。這個族群在基因與環境上都屬於糖尿病高風險群，適合用來建立早期風險預測。這份報告要回答的問題是：在這個資料集上，模型架構與正則化手段該怎麼取捨，才能在測試準確率與泛化能力之間取得平衡。"
       },
       {
         "type": "roles",
         "idx": "02 — APPROACH",
         "heading": "執行內容",
         "items": [
-          { "n": "01", "h": "資料前處理", "p": "清理資料、處理缺失值並進行特徵整理。" },
-          { "n": "02", "h": "模型訓練", "p": "選擇合適模型進行訓練，並調整參數觀察表現。" },
-          { "n": "03", "h": "結果比較", "p": "以評估指標比較不同學習型態與模型的差異。" }
+          { "n": "01", "h": "資料清理", "p": "Glucose、BloodPressure、SkinThickness、Insulin、BMI 五個欄位都出現 0 值，但這些指標在生理上不可能為 0，因此一律視為缺失值：先替換成 NaN，再以欄位平均數填補。" },
+          { "n": "02", "h": "切分與標準化", "p": "資料隨機切分為訓練 60%、驗證 20%、測試 20%，並對 Outcome 以外的欄位做 Z-score 標準化。平均數與標準差只合併訓練集與驗證集計算，避免測試集資訊外洩而高估模型表現。" },
+          { "n": "03", "h": "模型與訓練", "p": "以 Keras 建立全連接網路（8 → 32 → 16 → 1，輸出層為 Sigmoid），Adam 優化器搭配 Binary Crossentropy，batch size 32、訓練 200 輪，並用 TensorBoard 記錄訓練過程、ModelCheckpoint 保存驗證集表現最好的權重。" },
+          { "n": "04", "h": "對照實驗", "p": "依序調整神經元數量（64 → 32 → 16、32 → 32）、加入 Dropout 0.3、加入 EarlyStopping，以及把學習率調降一半，六組設定互相比較測試集準確率與驗證曲線的走勢。" }
         ]
       },
       {
         "type": "result",
         "idx": "03 — OUTCOME",
-        "heading": "成果",
-        "k": "待補 · 學習成果",
-        "v": "比較結果待補",
-        "todo": true,
-        "p": "預計補上模型表現數據與學習型態比較的結論。"
+        "heading": "實驗結果",
+        "k": "最終模型 · 測試集準確率 76.62%",
+        "v": "以 EarlyStopping 換取穩定的泛化能力",
+        "todo": false,
+        "p": "六組實驗中，Dropout 0.3 的測試集準確率最高（86.36%），但驗證準確率同時更低，代表模型只是把訓練資料學得更熟，泛化能力反而變差。加入 EarlyStopping 後測試準確率為 76.62%，驗證準確率穩定維持在 0.75–0.80 之間，因此選為最終模型。過程中反覆驗證到的一件事是：訓練準確率高並不等於泛化能力強——把網路加寬成 64 → 32 → 16，測試準確率反而掉到 70.78%。"
       }
     ],
-    "screensHeading": "成果截圖",
-    "shots": [{ "cap": "01 — 模型訓練與結果待補" }, { "cap": "02 — 學習型態比較表待補" }],
+    "screensHeading": "訓練曲線",
     "links": {
-      "idx": "05 — LINK",
+      "idx": "04 — LINK",
       "heading": "相關連結",
-      "name": "機器學習技術筆記",
-      "note": "技術筆記待補上連結",
-      "label": "查看技術筆記",
-      "url": "#"
+      "name": "kaggle.com/datasets/uciml/pima-indians-diabetes-database",
+      "note": "報告使用的資料集，原始資料由 NIDDK（美國國家糖尿病、消化道與腎臟疾病研究所）釋出。",
+      "label": "查看資料集",
+      "url": "https://www.kaggle.com/datasets/uciml/pima-indians-diabetes-database"
     }
   },
   {
