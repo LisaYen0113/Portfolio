@@ -39,7 +39,8 @@ export default function Contact() {
       <Reveal className="section" data-od-id="contact-list">
         <div className="contact-grid">
           {CONTACTS.map((c) => (
-            <a
+            <Reveal
+              as="a"
               className="contact-card"
               key={c.k}
               href={c.href}
@@ -50,7 +51,7 @@ export default function Contact() {
               <span className="contact-k">{c.k}</span>
               <span className="contact-v">{c.v}</span>
               <span className="contact-note">{c.note}</span>
-            </a>
+            </Reveal>
           ))}
         </div>
       </Reveal>

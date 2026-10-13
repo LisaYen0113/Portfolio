@@ -164,7 +164,8 @@ export default function Robot() {
         for (const geometry of geometries) geometry.dispose();
         for (const material of sceneRef.current.materials) material.dispose();
         renderer.dispose();
-        renderer.forceContextLoss();
+        // 同 MexicanHat.jsx：不呼叫 forceContextLoss()，否則 StrictMode 重新掛載時
+        // 會沿用同一個已失效的 canvas，renderer 建立失敗卻不拋例外，只留下空白畫面。
       };
     },
 

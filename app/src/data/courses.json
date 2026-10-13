@@ -3,11 +3,14 @@
     "id": "research-project",
     "num": "01",
     "pill": "研究專案",
+    "category": "課程與實作",
     "title": "國科會大專學生研究計畫",
     "lead": "以混合檢索架構 Agent 的解釋品質為題，透過對照組實驗比較結構化查詢與提示詞優化機制的效果。計畫執行中。",
-    "listTitle": "國科會大專學生研究計畫",
-    "listDesc": "研究混合檢索架構 Agent 的解釋品質，以對照組實驗比較結構化查詢與提示詞優化機制。",
-    "listForm": "研究專案",
+    "cardTitle": "國科會大專學生研究計畫",
+    "cardDesc": "研究混合檢索架構 Agent 的解釋品質，以對照組實驗比較結構化查詢與提示詞優化機制。",
+    "cardTags": ["RAG", "GPT-4o", "對照組實驗"],
+    "cardRole": "研究專案 · 個人",
+    "mediaLabel": "國科會計畫 · 研究流程待補",
     "spec": [
       { "k": "計畫類別", "v": "國科會大專學生研究計畫", "todo": false },
       { "k": "專案角色", "v": "個人 · 指導教授 彭議霆", "todo": false },
@@ -17,13 +20,13 @@
     "flow": [
       {
         "type": "prose",
-        "idx": "01 — PROBLEM",
+        "idx": "02 — PROBLEM",
         "heading": "背景與問題",
         "text": "傳統 RAG 在處理結構化表格資料時，會因為文本切分而流失結構語意，進而導致數值幻覺與推理斷裂。這個研究想確認的是：在既有的檢索流程之上加入結構化查詢能力與自動化提示詞優化機制之後，Agent 的回答品質是否真的會提升。"
       },
       {
         "type": "roles",
-        "idx": "02 — APPROACH",
+        "idx": "03 — APPROACH",
         "heading": "執行內容",
         "items": [
           { "n": "01", "h": "研究設計", "p": "以僅具備傳統 RAG 能力的 Agent 作為對照組，與具備結構化查詢能力及自動化提示詞優化機制的 AI Agent 進行比較。" },
@@ -33,7 +36,7 @@
       },
       {
         "type": "result",
-        "idx": "03 — OUTCOME",
+        "idx": "04 — OUTCOME",
         "heading": "成果",
         "k": "待補 · 研究結論",
         "v": "計畫執行中，結果待補",
@@ -44,7 +47,7 @@
     "screensHeading": "成果截圖",
     "shots": [{ "cap": "01 — 研究流程圖待補" }, { "cap": "02 — 實驗結果與圖表待補" }],
     "links": {
-      "idx": "05 — LINK",
+      "idx": "01 — LINK",
       "heading": "相關連結",
       "name": "研究文件",
       "note": "研究文件待補上連結",
@@ -56,11 +59,14 @@
     "id": "database",
     "num": "02",
     "pill": "技術案例",
+    "category": "課程與實作",
     "title": "資料庫實作",
     "lead": "從實體關聯設計到 SQL 查詢，實作一個具備資料表關聯與查詢能力的資料庫案例。",
-    "listTitle": "資料庫實作",
-    "listDesc": "實作資料表關聯設計與 SQL 查詢，建立可維運的資料庫案例。",
-    "listForm": "技術案例",
+    "cardTitle": "資料庫實作",
+    "cardDesc": "實作資料表關聯設計與 SQL 查詢，建立可維運的資料庫案例。",
+    "cardTags": ["SQL", "ERD", "正規化"],
+    "cardRole": "課程實作 · 個人",
+    "mediaLabel": "資料庫實作 · ERD 待補",
     "spec": [
       { "k": "年份", "v": "待補", "todo": true },
       { "k": "專案角色", "v": "個人", "todo": false },
@@ -70,14 +76,14 @@
     "flow": [
       {
         "type": "prose",
-        "idx": "01 — PROBLEM",
+        "idx": "02 — PROBLEM",
         "heading": "背景與問題",
         "text": "本課程實作以一個貼近實務的情境為題，練習把需求轉換為資料表結構，並透過關聯設計支撐後續查詢。",
         "todo": "情境與需求待補"
       },
       {
         "type": "roles",
-        "idx": "02 — APPROACH",
+        "idx": "03 — APPROACH",
         "heading": "執行內容",
         "items": [
           { "n": "01", "h": "資料建模", "p": "整理實體與關聯，設計正規化的資料表結構。" },
@@ -87,7 +93,7 @@
       },
       {
         "type": "result",
-        "idx": "03 — OUTCOME",
+        "idx": "04 — OUTCOME",
         "heading": "成果",
         "k": "待補 · 實作成果",
         "v": "成果說明待補",
@@ -99,7 +105,7 @@
     "erd": true,
     "shots": [{ "cap": "01 — 查詢結果畫面待補" }],
     "links": {
-      "idx": "05 — LINK",
+      "idx": "01 — LINK",
       "heading": "相關連結",
       "name": "github.com/待補 · database",
       "note": "課程實作原始碼待補上連結",
@@ -111,11 +117,14 @@
     "id": "machine-learning",
     "num": "03",
     "pill": "課程專題",
+    "category": "課程與實作",
     "title": "糖尿病發作預測模型",
     "lead": "以 Pima Indians Diabetes Dataset 建立 Keras 二元分類網路，透過六組架構與訓練參數的對照實驗，找出準確率與泛化能力之間的平衡點。",
-    "listTitle": "糖尿病發作預測模型",
-    "listDesc": "以 Pima Indians 資料集訓練二元分類網路，用六組對照實驗比較模型架構與正則化對泛化能力的影響。",
-    "listForm": "課程專題",
+    "cardTitle": "糖尿病發作預測模型",
+    "cardDesc": "以 Pima Indians 資料集訓練二元分類網路，用六組對照實驗比較模型架構與正則化對泛化能力的影響。",
+    "cardTags": ["Python", "Keras", "pandas"],
+    "cardRole": "課程專題 · 模型訓練與調參",
+    "mediaLabel": "糖尿病預測 · 六組訓練曲線",
     "spec": [
       { "k": "課程", "v": "資料處理程式設計", "todo": false },
       { "k": "學期", "v": "113 學年度第 2 學期", "todo": false },
@@ -125,13 +134,13 @@
     "flow": [
       {
         "type": "prose",
-        "idx": "01 — PROBLEM",
+        "idx": "02 — PROBLEM",
         "heading": "背景與問題",
         "text": "Pima Indians Diabetes Dataset 收錄 768 位皮馬印第安女性的生理量測，包含懷孕次數、血糖、血壓、皮褶厚度、胰島素、BMI、糖尿病家族指數與年齡 8 個特徵，以及一個二元目標 Outcome。這個族群在基因與環境上都屬於糖尿病高風險群，適合用來建立早期風險預測。這份報告要回答的問題是：在這個資料集上，模型架構與正則化手段該怎麼取捨，才能在測試準確率與泛化能力之間取得平衡。"
       },
       {
         "type": "roles",
-        "idx": "02 — APPROACH",
+        "idx": "03 — APPROACH",
         "heading": "執行內容",
         "items": [
           { "n": "01", "h": "資料清理", "p": "Glucose、BloodPressure、SkinThickness、Insulin、BMI 五個欄位都出現 0 值，但這些指標在生理上不可能為 0，因此一律視為缺失值：先替換成 NaN，再以欄位平均數填補。" },
@@ -142,7 +151,7 @@
       },
       {
         "type": "result",
-        "idx": "03 — OUTCOME",
+        "idx": "04 — OUTCOME",
         "heading": "實驗結果",
         "k": "最終模型 · 測試集準確率 76.62%",
         "v": "以 EarlyStopping 換取穩定的泛化能力",
@@ -151,8 +160,17 @@
       }
     ],
     "screensHeading": "訓練曲線",
+    "screensIdx": "CURVES",
+    "shots": [
+      { "cap": "01 — 原始架構 32 → 16（測試集 73.38%）", "src": "/shots/diabetes-01-32-16.png" },
+      { "cap": "02 — 加寬為 64 → 32 → 16（測試集 70.78%）", "src": "/shots/diabetes-02-64-32-16.png" },
+      { "cap": "03 — 改為 32 → 32（測試集 77.27%）", "src": "/shots/diabetes-03-32-32.png" },
+      { "cap": "04 — 加入 Dropout 0.3（測試集 86.36%）", "src": "/shots/diabetes-04-dropout.png" },
+      { "cap": "05 — 加入 EarlyStopping（測試集 76.62%，最終模型）", "src": "/shots/diabetes-05-earlystop.png" },
+      { "cap": "06 — 學習率調降為 0.0005（測試集 72.73%）", "src": "/shots/diabetes-06-lr.png" }
+    ],
     "links": {
-      "idx": "04 — LINK",
+      "idx": "01 — LINK",
       "heading": "相關連結",
       "name": "kaggle.com/datasets/uciml/pima-indians-diabetes-database",
       "note": "報告使用的資料集，原始資料由 NIDDK（美國國家糖尿病、消化道與腎臟疾病研究所）釋出。",
@@ -161,68 +179,17 @@
     }
   },
   {
-    "id": "data-analysis",
+    "id": "mexican-hat",
     "num": "04",
-    "pill": "分析報告",
-    "title": "資料分析作業",
-    "lead": "從資料清理、分布檢視到視覺化圖表，完成一份具備結論與洞見的分析報告。",
-    "listTitle": "資料分析作業",
-    "listDesc": "從資料清理到視覺化圖表，完成具備結論與洞見的分析報告。",
-    "listForm": "分析報告",
-    "spec": [
-      { "k": "年份", "v": "待補", "todo": true },
-      { "k": "專案角色", "v": "個人", "todo": false },
-      { "k": "專案類型", "v": "課程作業", "todo": false },
-      { "k": "技術", "v": "Python", "todo": false }
-    ],
-    "flow": [
-      {
-        "type": "prose",
-        "idx": "01 — PROBLEM",
-        "heading": "背景與問題",
-        "text": "這份作業以一份公開資料集為題，練習從原始資料中找出值得回答的問題，並用資料佐證結論。",
-        "todo": "資料集與分析問題待補"
-      },
-      {
-        "type": "roles",
-        "idx": "02 — APPROACH",
-        "heading": "執行內容",
-        "items": [
-          { "n": "01", "h": "資料清理", "p": "處理缺失與異常值，整理出可分析的資料集。" },
-          { "n": "02", "h": "探索分析", "p": "檢視變數分布與關聯，找出值得深入的方向。" },
-          { "n": "03", "h": "視覺化", "p": "以圖表呈現分析結果，並據此提出結論與建議。" }
-        ]
-      },
-      {
-        "type": "result",
-        "idx": "03 — OUTCOME",
-        "heading": "成果",
-        "k": "待補 · 分析結論",
-        "v": "分析結論待補",
-        "todo": true,
-        "p": "預計補上主要發現、圖表與分析建議。"
-      }
-    ],
-    "screensHeading": "成果截圖",
-    "shots": [{ "cap": "01 — 資料清理與分布待補" }, { "cap": "02 — 視覺化圖表與結論待補" }],
-    "links": {
-      "idx": "05 — LINK",
-      "heading": "相關連結",
-      "name": "資料分析報告",
-      "note": "分析報告待補上連結",
-      "label": "查看分析報告",
-      "url": "#"
-    }
-  },
-  {
-    "id": "webgl",
-    "num": "05",
-    "pill": "精選課程作品",
-    "title": "資工雙主修修課成果",
-    "lead": "資工雙主修修課期間的電腦圖學實作，從圖元繪製、光照著色到互動動畫。兩份作業已改寫為可直接在瀏覽器操作的展示。",
-    "listTitle": "資工雙主修修課成果",
-    "listDesc": "資工雙主修修課期間的 WebGL 實作，涵蓋圖元繪製、光照與互動動畫。",
-    "listForm": "精選課程作品",
+    "pill": "電腦圖學",
+    "category": "課程與實作",
+    "title": "墨西哥帽子：曲面繪製與行星系統",
+    "lead": "以 sinc 函式取樣繪製帽狀的線框球體，再用階層式模型把同一套做法疊成行星系統，並開放公轉、自轉與半徑的即時控制。",
+    "cardTitle": "墨西哥帽子：曲面繪製與行星系統",
+    "cardDesc": "以 sinc 函式取樣繪製線框球體，再用階層式模型疊成行星系統，並開放即時控制。",
+    "cardTags": ["three.js", "WebGL", "座標變換"],
+    "cardRole": "電腦圖學作業 · 曲面繪製與座標變換",
+    "mediaLabel": "行星系統 · 互動展示",
     "spec": [
       { "k": "課程", "v": "電腦圖學", "todo": false },
       { "k": "學期", "v": "113 學年度第 1 學期", "todo": false },
@@ -232,25 +199,17 @@
     "flow": [
       {
         "type": "prose",
-        "idx": "01 — BACKGROUND",
+        "idx": "02 — BACKGROUND",
         "heading": "課程與學習脈絡",
-        "text": "這門課從圖學的底層原理開始：座標系統與透視投影、區域光照與全域光照、渲染管線與 z-buffer，一路到階層式建模。每學一個概念就配一份實作，於是有了下面兩份作業——一份練數學函式的曲面繪製與座標變換，一份練骨架階層與動作控制。"
-      },
-      {
-        "type": "demo",
-        "idx": "02 — DEMO",
-        "heading": "互動展示：墨西哥帽子",
-        "demo": "mexican-hat",
-        "caption": "拖曳可旋轉視角、滾輪縮放。下方按鈕對應作業要求的三項功能：月球縮放振盪、可調整的地球公轉半徑、地球2 的完整翻滾。",
-        "note": "參考基礎：行星公轉範例來自吳祐任學長，行星自轉作法參考陳冠宇學長。sinc 函式線框球體、月球縮放、兩顆地球的公轉半徑控制與地球2 的 x 軸翻滾為本人實作。"
+        "text": "這門課從圖學的底層原理開始：座標系統與透視投影、渲染管線與 z-buffer，一路到階層式建模。這份作業練的是數學函式的曲面繪製——以 sinc 函式取樣出帽狀的線框球體，再用階層式模型把同一套做法疊成一個行星系統。"
       },
       {
         "type": "demo",
         "idx": "03 — DEMO",
-        "heading": "互動展示：機器人大變身",
-        "demo": "robot",
-        "caption": "點擊按鈕切換九種動作，拖曳可環繞觀看。每個動作都是一組關節角度隨時間變化的組合。",
-        "note": "參考基礎：基於老師提供的 WebGL 版機器人範例。九種動作的關節動畫與動作切換介面為本人實作。"
+        "heading": "互動展示：墨西哥帽子",
+        "demo": "mexican-hat",
+        "caption": "拖曳可旋轉視角、滾輪縮放。下方按鈕對應作業要求的三項功能：月球縮放振盪、可調整的地球公轉半徑、地球2 的完整翻滾。",
+        "note": "參考基礎：行星公轉範例來自吳祐任學長，行星自轉作法參考陳冠宇學長。sinc 函式線框球體、月球縮放、兩顆地球的公轉半徑控制與地球2 的 x 軸翻滾為本人實作。"
       },
       {
         "type": "roles",
@@ -258,8 +217,7 @@
         "heading": "執行內容",
         "items": [
           { "n": "01", "h": "曲面繪製", "p": "以 sinc 函式取樣產生線框球體，逐頂點計算座標與顏色，練習緩衝區幾何的建立方式。" },
-          { "n": "02", "h": "座標變換", "p": "以階層式模型實作行星系統的公轉與自轉，並讓月球半徑隨時間週期性縮放。" },
-          { "n": "03", "h": "骨架動畫", "p": "以 Bone 階層建立機器人骨架，設計九種動作的關節角度變化，並處理動作之間的互斥切換。" }
+          { "n": "02", "h": "座標變換", "p": "以階層式模型實作行星系統的公轉與自轉，並讓月球半徑隨時間週期性縮放。" }
         ]
       },
       {
@@ -274,12 +232,77 @@
     ],
     "screensHeading": "成果截圖",
     "shots": [
-      { "cap": "01 — 基本圖元繪製待補" },
-      { "cap": "02 — 光照與著色待補" },
-      { "cap": "03 — 互動與動畫待補" }
+      { "cap": "01 — 曲面繪製與線框待補" },
+      { "cap": "02 — 行星系統互動待補" }
     ],
     "links": {
-      "idx": "07 — LINK",
+      "idx": "01 — LINK",
+      "heading": "原始碼",
+      "name": "github.com/LisaYen0113/Portfolio · legacy/",
+      "note": "改寫後的元件位於 app/src/components/demos/，原始作業檔案保存在 legacy/。",
+      "label": "在 GitHub 檢視",
+      "url": "https://github.com/LisaYen0113/Portfolio/tree/main/legacy"
+    }
+  },
+  {
+    "id": "robot",
+    "num": "05",
+    "pill": "電腦圖學",
+    "category": "課程與實作",
+    "title": "機器人大變身：骨架階層動畫",
+    "lead": "以 Bone 階層建立方塊機器人的骨架，設計九種動作的關節角度變化，並處理動作之間的互斥切換。",
+    "cardTitle": "機器人大變身：骨架階層動畫",
+    "cardDesc": "以 Bone 階層建立機器人骨架，設計九種動作的關節角度變化，並處理動作之間的互斥切換。",
+    "cardTags": ["three.js", "WebGL", "骨架動畫"],
+    "cardRole": "電腦圖學作業 · 骨架階層與動作控制",
+    "mediaLabel": "機器人骨架 · 互動展示",
+    "spec": [
+      { "k": "課程", "v": "電腦圖學", "todo": false },
+      { "k": "學期", "v": "113 學年度第 1 學期", "todo": false },
+      { "k": "修課身分", "v": "資工雙主修", "todo": false },
+      { "k": "技術", "v": "three.js · WebGL · C++ / OpenGL", "todo": false }
+    ],
+    "flow": [
+      {
+        "type": "prose",
+        "idx": "02 — BACKGROUND",
+        "heading": "課程與學習脈絡",
+        "text": "這門課從圖學的底層原理開始：區域光照與全域光照、渲染管線與 z-buffer，一路到階層式建模。這份作業練的是骨架階層與動作控制——以 Bone 建立機器人骨架，再設計九種動作的關節角度變化。"
+      },
+      {
+        "type": "demo",
+        "idx": "03 — DEMO",
+        "heading": "互動展示：機器人大變身",
+        "demo": "robot",
+        "caption": "點擊按鈕切換九種動作，拖曳可環繞觀看。每個動作都是一組關節角度隨時間變化的組合。",
+        "note": "參考基礎：基於老師提供的 WebGL 版機器人範例。九種動作的關節動畫與動作切換介面為本人實作。"
+      },
+      {
+        "type": "roles",
+        "idx": "04 — WORK",
+        "heading": "執行內容",
+        "items": [
+          { "n": "01", "h": "骨架建構", "p": "以 Bone 階層建立機器人骨架，處理軀幹、四肢與頭部之間的父子關係與旋轉軸。" },
+          { "n": "02", "h": "動作設計", "p": "設計九種動作的關節角度變化，並處理動作之間的互斥切換。" }
+        ]
+      },
+      {
+        "type": "result",
+        "idx": "05 — OUTCOME",
+        "heading": "學習成果",
+        "k": "自製課程講義 · 95 / 120",
+        "v": "主動整理成教材",
+        "todo": false,
+        "p": "除了完成作業，也把課堂內容整理成一份自己的圖學講義，涵蓋光線追蹤、透視投影、渲染管線、z-buffer 與階層式建模。整理講義的過程比寫程式更能確認自己真的理解了原理，而不只是讓作業跑得動。"
+      }
+    ],
+    "screensHeading": "成果截圖",
+    "shots": [
+      { "cap": "01 — 骨架階層與動作切換待補" },
+      { "cap": "02 — 光照與著色待補" }
+    ],
+    "links": {
+      "idx": "01 — LINK",
       "heading": "原始碼",
       "name": "github.com/LisaYen0113/Portfolio · legacy/",
       "note": "改寫後的元件位於 app/src/components/demos/，原始作業檔案保存在 legacy/。",

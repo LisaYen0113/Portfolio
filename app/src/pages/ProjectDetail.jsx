@@ -55,22 +55,23 @@ export default function ProjectDetail() {
         <SpecGrid items={project.spec} />
       </header>
 
-      {project.flow.map((block, i) => (
-        <FlowSection key={i} block={block} anchor={anchorFor(block)} />
-      ))}
-
-      <ShotGrid
-        idx={`${pad(project.flow.length + 1)} — SCREENSHOTS`}
-        heading={project.screensHeading}
-        shots={project.shots}
-        anchor="project-screenshots"
-      />
-
+      {/* 作品連結放最上面：有連結就佔 01，其餘區塊順序往後遞延 */}
       <LinkRow
         idx={project.repo?.idx}
         heading={project.repo?.heading}
         link={project.repo}
         anchor="project-repo"
+      />
+
+      {project.flow.map((block, i) => (
+        <FlowSection key={i} block={block} anchor={anchorFor(block)} />
+      ))}
+
+      <ShotGrid
+        idx={`${pad(project.flow.length + (project.repo ? 2 : 1))} — ${project.screensIdx ?? "SCREENSHOTS"}`}
+        heading={project.screensHeading}
+        shots={project.shots}
+        anchor="project-screenshots"
       />
 
       <Footer backTo="/portfolio" backLabel="返回作品集 ↑" />

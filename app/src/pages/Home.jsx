@@ -31,8 +31,14 @@ export default function Home() {
         </div>
 
         <div className="work-list">
-          {featured.map((p) => (
-            <Link className="work-row" key={p.id} to={`/portfolio/${p.id}`}>
+          {featured.map((p, i) => (
+            <Reveal
+              as={Link}
+              className="work-row"
+              key={p.id}
+              to={`/portfolio/${p.id}`}
+              delay={i * 60}
+            >
               <div>
                 <span className="wr-idx">
                   {p.num} · {p.pill}
@@ -53,7 +59,7 @@ export default function Home() {
                   <IconChevron />
                 </span>
               </div>
-            </Link>
+            </Reveal>
           ))}
         </div>
 

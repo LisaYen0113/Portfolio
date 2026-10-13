@@ -75,15 +75,15 @@ export default function Experience() {
         </div>
         <div className="timeline">
           {EDUCATION.map((e) => (
-            <div className="tl-item" key={e.h}>
+            <Reveal as="div" className="tl-item" key={e.h}>
               <div className="tl-when">{e.when}</div>
               <div>
                 <div className="tl-h">{e.h}</div>
                 <p className="tl-sub">{e.sub}</p>
               </div>
-            </div>
+            </Reveal>
           ))}
-          <div className="tl-item">
+          <Reveal as="div" className="tl-item">
             <div className="tl-when">修課表現</div>
             <div>
               <div className="tl-h">專業科目</div>
@@ -95,7 +95,7 @@ export default function Experience() {
                 ))}
               </ul>
             </div>
-          </div>
+          </Reveal>
         </div>
       </Reveal>
 
@@ -105,6 +105,9 @@ export default function Experience() {
             <span className="section-idx">02 — CERTIFICATIONS</span>
             <h2 className="section-title">證照</h2>
           </div>
+          {/* 這裡刻意不逐項進場。.cert-list 是 gap:1px 疊在 border 色底上的細線格，
+              格子之間那條線其實是底層背景露出來的；把 .cert 設成 opacity:0 的話，
+              線會先出現、內容後到，看起來像一張空骨架。整區一起進場就沒有這問題。 */}
           <div className="cert-list">
             {CERTS.map((c) => (
               <div className="cert" key={c.h}>
@@ -124,7 +127,7 @@ export default function Experience() {
         </div>
         <div className="skills-grid">
           {SKILLS.map((s) => (
-            <div className="skill-cat" key={s.h}>
+            <Reveal as="div" className="skill-cat" key={s.h}>
               <div className="skill-cat-h">{s.h}</div>
               <ul className="skill-list">
                 {s.items.map((it) => (
@@ -133,7 +136,7 @@ export default function Experience() {
                   </li>
                 ))}
               </ul>
-            </div>
+            </Reveal>
           ))}
         </div>
       </Reveal>

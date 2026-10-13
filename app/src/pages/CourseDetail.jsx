@@ -52,23 +52,24 @@ export default function CourseDetail() {
         <SpecGrid items={course.spec} />
       </header>
 
+      {/* 作品連結放最上面：有連結就佔 01，其餘區塊順序往後遞延 */}
+      <LinkRow
+        idx={course.links?.idx}
+        heading={course.links?.heading}
+        link={course.links}
+        anchor="course-link"
+      />
+
       {course.flow.map((block, i) => (
         <FlowSection key={i} block={block} anchor={anchorFor(block)} />
       ))}
 
       <ShotGrid
-        idx={`${pad(course.flow.length + 1)} — SCREENSHOTS`}
+        idx={`${pad(course.flow.length + (course.links ? 2 : 1))} — ${course.screensIdx ?? "SCREENSHOTS"}`}
         heading={course.screensHeading}
         shots={course.shots}
         erd={course.erd}
         anchor="course-screenshots"
-      />
-
-      <LinkRow
-        idx={course.links.idx}
-        heading={course.links.heading}
-        link={course.links}
-        anchor="course-link"
       />
 
       <Footer backTo="/portfolio" backLabel="返回作品集 ↑" />

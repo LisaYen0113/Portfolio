@@ -307,19 +307,44 @@ button {
 .main {
   min-width: 0;
   padding: var(--pad-t) var(--pad-x) var(--pad-y);
-  max-width: 1080px;
+  /* 原本只有 max-width: 1080px，沒有置中——格線是 auto + 1fr，.main 就貼在
+     側邊欄右緣往右長到 1080px 為止，剩下的全留在右邊。
+     1600px 的視窗右邊空 361px、1920px 空 681px，左邊卻只有 56px 內距，
+     看起來就像內容漏了一塊（2026-10 回報）。
+     改成 1200px 並用 margin-inline: auto 置中：桌機兩側留白對稱，
+     1440px 以上才會吃到這個上限。
+     內文不會跟著變寬：段落各自有 56–64ch 的上限（.page-intro、.prose、
+     .detail-lead 等），這裡放寬的只有格線與 hero 這類版面。 */
+  max-width: 1200px;
   width: 100%;
+  margin-inline: auto;
 }
 
+/* 進場用 animation 而不是 transition。
+   要進場的元素大多自己也有一條 transition（.card 的 hover 位移、.work-row 的
+   padding），而 CSS 沒辦法把兩條 transition 合併——同特異度時後寫的那條會整條
+   蓋掉前面那條，進場動畫就會直接失效。animation 跟 transition 是兩套獨立的
+   機制，可以並存，所以元素自己的 hover 效果完全不用改。
+   位移動的是 translate 而不是 transform，這樣 hover 的 transform 也不會被蓋掉。
+   觸發時機由 components/revealQueue.js 決定（捲到才加 .in），這裡只負責怎麼動。 */
 .reveal {
   opacity: 0;
-  transform: translateY(14px);
-  transition: opacity 0.6s ease, transform 0.6s ease;
 }
 
 .reveal.in {
   opacity: 1;
-  transform: none;
+  animation: reveal-in 0.6s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+@keyframes reveal-in {
+  from {
+    opacity: 0;
+    translate: 0 14px;
+  }
+  to {
+    opacity: 1;
+    translate: none;
+  }
 }
 
 .page-head {
@@ -680,6 +705,15 @@ button {
   font-size: 12px;
   text-align: center;
   padding: 16px;
+}
+
+.shot-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
 }
 
 .content-img {
@@ -1043,16 +1077,22 @@ button {
 
 .card-grid {
   display: grid;
-  /* 原本寫死兩欄。改成跟前三個格線（.cert-list／.skills-grid／.contact-grid）
-     一樣用 auto-fill：.main 寬度上限 1080px、左右內距各 56px，可用寬度上限 968px，
-     但頁面需要直向捲動軸時會再少約 15px，1280px 的筆電上實際只有 953px。
-     門檻取 290px 而不是 300px 就是為了這個：300×3 + 28×2 = 956 > 953，
-     會剛好在最常見的 1280px 上退回兩欄；290×3 + 28×2 = 926 ≤ 953 才進得去。
-     1280 以上是三欄（卡寬 299px），較窄的筆電退兩欄，手機維持一欄。
-     用 auto-fill 而不是 auto-fit，是為了讓分類篩選後只剩一張卡時，
-     卡片仍維持三欄的寬度、不會被拉成一張橫跨整頁的大卡。 */
-  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  /* 專案與課程實作共用同一面卡片牆，固定 10 張，三欄排成 3 / 3 / 3 / 1。
+     10 不是 3 的倍數，最後一列只會有一張卡、右邊空兩格——這是使用者指定
+     的三欄排法（2026-10-13），不是漏掉了。要讓最後一列也排滿，卡片總數
+     得是 3 的倍數：9 張（少一張）或 12 張（多兩張）都可以。
+     欄數直接寫死，不用 auto-fill 讓瀏覽器自己算（10 張怎麼算都會缺角）。
+     .main 寬度上限 1200px、左右內距各 56px，三欄時卡片寬 277–344px。
+     卡片會被壓到 277px 以下時退回兩欄（1199px），再窄退回單欄（640px）。 */
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--gap-lg);
+}
+
+/* 兩欄：視窗 1199px 以下時，三欄會把卡片壓到 277px 以下，標題與標籤開始擠。 */
+@media (max-width: 1199px) {
+  .card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 .card {
@@ -1071,7 +1111,12 @@ button {
 }
 
 .card-media {
-  aspect-ratio: 16 / 10;
+  /* 原本是 16 / 10。三欄時卡片寬 277–344px，換算下來預覽區高 173–215px，
+     佔掉卡片快一半的高度，標題、簡介與技術標籤常被推到首屏外（2026-10-13）。
+     改成 16 / 7 後高度降到 121–150px，約少 30%。這裡只是 aria-hidden 的
+     文字佔位框，還沒有真的圖片，所以不會有裁切問題；將來放截圖時 16:7
+     仍是好用的寬幅比例。 */
+  aspect-ratio: 16 / 7;
   background: linear-gradient(135deg, var(--accent-soft), var(--fg-soft)), var(--surface);
   display: grid;
   place-items: center;
@@ -1122,6 +1167,18 @@ button {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+  /* 同一列的膠囊要從同一條線開始，關鍵是讓每張卡的膠囊區一樣高。
+     卡片裡只有 .card-desc 會長大（flex: 1），多出來的空間全被它吃掉，
+     所以膠囊區只要高度不同，說明就會被撐成不同高、膠囊起點跟著歪——
+     1600px 下第一列的膠囊起點是 435 / 435 / 472，差 37px。
+     一顆膠囊高 28.7px（11px 字 × 繼承來的 1.7 行高 = 18.7，加上下 4px
+     內距與 1px 邊框），兩列再加 8px 間距就是下面這個高度。
+     641–1920px 實際量過，膠囊最多排到兩列，所以固定兩列高就夠；
+     釘住之後每張卡的說明會被撐成一樣高，膠囊自然對齊。
+     後兩行是防呆：少了它們，只有一列膠囊的卡片會被 stretch 拉開。 */
+  min-height: calc(2 * (1.7 * 11px + 2 * 4px + 2 * 1px) + 8px);
+  align-content: flex-start;
+  align-items: flex-start;
 }
 
 .card-role {
@@ -1133,72 +1190,33 @@ button {
   padding-top: 14px;
 }
 
-/* ---- more-list (courses on portfolio) ------------------------------ */
-.more-head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 16px;
-  border-top: 1px solid var(--fg);
-  padding-top: 20px;
-  margin-bottom: 10px;
+/* ---- 篩選切換的轉場（View Transition API）-----------------------------
+   見 components/useViewTransition.js。切換分類時卡片的數量與位置都會變，
+   有登記 view-transition-name 的卡片（WorkCard.jsx 用 id 產生）由瀏覽器
+   自動在新舊位置之間平移、淡入淡出，這是不加動畫套件的 FLIP。
+
+   根元素預設會被瀏覽器當成一個叫 root 的快照，整頁跟著淡掉。這裡關掉它，
+   只留卡片會動——側邊欄與標題列在切分類時不該一起閃。
+   名稱重複會讓整份文件的轉場被跳過，所以 WorkCard 的名稱帶了 kind 前綴。 */
+:root {
+  view-transition-name: none;
 }
 
-.more-list {
-  display: flex;
-  flex-direction: column;
+::view-transition-group(*) {
+  animation-duration: 340ms;
+  animation-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
-.more-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 18px;
-  padding: 20px 4px;
-  border-top: 1px solid var(--border);
-  transition: padding 0.2s ease;
+::view-transition-old(*),
+::view-transition-new(*) {
+  animation-duration: 340ms;
+  /* 預設的混合模式是 plus-lighter（加亮），在淺色底上會把卡片洗成一片白，
+     看起來像閃光而不是淡入淡出。改成正常混合。 */
+  mix-blend-mode: normal;
 }
 
-.more-item:hover {
-  padding-left: 12px;
-  padding-right: 12px;
-}
-
-.mi-title {
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 17px;
-}
-
-.mi-desc {
-  margin-top: 6px;
-  color: var(--muted);
-  font-size: var(--fs-small);
-}
-
-.mi-right {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  flex: none;
-}
-
-.mi-form {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.03em;
-  color: var(--muted);
-}
-
-.mi-go {
-  color: var(--muted);
-  transition: transform 0.2s ease, color 0.18s ease;
-}
-
-.more-item:hover .mi-go {
-  transform: translateX(4px);
-  color: var(--accent);
-}
+/* 減少動態效果時完全不會起轉場（useViewTransition 就先擋掉了），
+   所以下面那條 prefers-reduced-motion 不必再處理這裡。 */
 
 /* ---- about ---------------------------------------------------------- */
 .about-grid {
@@ -1510,7 +1528,6 @@ button {
   }
 
   .work-row,
-  .more-item,
   .tl-item {
     grid-template-columns: 1fr;
     gap: 12px;
@@ -1543,6 +1560,7 @@ button {
   .reveal {
     opacity: 1;
     transform: none;
+    translate: none;
   }
 }
 

@@ -141,7 +141,11 @@ export default function MexicanHat() {
         // 五個天體共用同一個材質，只能釋放一次
         LINE_MATERIAL.dispose();
         renderer.dispose();
-        renderer.forceContextLoss();
+        // 這裡刻意不呼叫 forceContextLoss()。開發模式下 StrictMode 會先卸載再重新掛載，
+        // 而重新掛載時 React 沿用同一個 <canvas>；context 一旦被強制釋放就無法復原，
+        // 第二次建立的 renderer 只會拿到失效的 context（three.js 印出 precision 的錯誤
+        // 但不拋例外，所以 DemoBoundary 攔不到），畫面上只會剩下一個空白的框。
+        // 真正的卸載交給 GC 回收已 detach 的 canvas，dispose() 已釋放 GPU 資源。
       };
     },
 

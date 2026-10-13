@@ -32,6 +32,8 @@ export function FlowSection({ block, anchor }) {
       )}
 
       {block.type === "roles" && (
+        /* 逐項進場要在這裡喊停：.roles 是 gap:1px 疊在 border 色底上的細線格，
+           把 .role-item 藏起來只會先看到一格空格線。整區跟著 .section 進場。 */
         <div className="roles">
           {block.items.map((it) => (
             <div className="role-item" key={it.n}>
@@ -69,11 +71,24 @@ export function ShotGrid({ idx, heading, shots, anchor, erd }) {
       <SectionHead idx={idx} heading={heading} />
       {erd && <ErDiagram />}
       <div className="shot-grid">
-        {shots.map((s) => (
-          <figure className="shot" key={s.cap} style={{ margin: 0 }}>
-            <div className="ph-img">圖片待補</div>
+        {shots.map((s, i) => (
+          /* 截圖兩欄排，一張一張進場，同排由左而右錯開 70ms。
+             .shot 本身沒有框線、.shot-grid 也是一般 gap，逐張淡入不會留下空框。 */
+          <Reveal
+            as="figure"
+            className="shot"
+            key={s.cap}
+            delay={(i % 2) * 70}
+            style={{ margin: 0 }}
+          >
+            {/* 有 src 就放圖，沒有才留「圖片待補」佔位 */}
+            {s.src ? (
+              <img className="shot-img" src={s.src} alt={s.cap} loading="lazy" />
+            ) : (
+              <div className="ph-img">圖片待補</div>
+            )}
             <figcaption className="shot-cap">{s.cap}</figcaption>
-          </figure>
+          </Reveal>
         ))}
       </div>
     </Reveal>
